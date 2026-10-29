@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="VERBO - O jogo de perguntas e respostas da Biblia. Teste e aprofunde seu conhecimento das Escrituras.">
+<meta name="theme-color" content="#0d1117">
+<title>VERBO - Quiz da Biblia</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand" id="brandBtn" title="Inicio">
+      <svg class="logo" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M20 8 C14 4, 7 4, 5 6 L5 32 C7 30, 14 30, 20 34 C26 30, 33 30, 35 32 L35 6 C33 4, 26 4, 20 8 Z" stroke="#e0a41c" stroke-width="2.2" fill="rgba(224,164,28,.10)"/>
+        <path d="M20 9 L20 33" stroke="#e0a41c" stroke-width="2.2"/>
+        <path d="M20 1.5 L20 5.5" stroke="#f5c95c" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <div class="name">VERBO<small>QUIZ DA BIBLIA</small></div>
+    </div>
+    <button class="iconbtn" id="soundBtn" title="Som ligado ou desligado" aria-label="Som">&#9835;</button>
+  </header>
+
+  <!-- ===== INICIO ===== -->
+  <section class="screen on" id="scHome">
+    <div class="hero">
+      <h1>VERBO</h1>
+      <div class="sub">Perguntas e respostas das Sagradas Escrituras</div>
+      <div class="versebox">
+        <div class="vx" id="homeVerse"></div>
+        <div class="vr" id="homeVerseRef"></div>
+      </div>
+    </div>
+    <div class="homerecord">
+      <div class="hchip"><div class="n" id="homeRec">0</div><div class="l">RECORDE</div></div>
+      <div class="hchip"><div class="n" id="homeGames">0</div><div class="l">JOGOS</div></div>
+      <div class="hchip"><div class="n" id="homeStreak">0</div><div class="l">SEQ.</div></div>
+    </div>
+    <div class="modes">
+      <button class="mode" data-act="classic">
+        <div class="mi gold">P</div>
+        <div class="mm"><b>Partida Classica</b><span>10 perguntas, 3 vidas, dificuldade subindo. Vale recorde.</span></div>
+        <div class="rec" id="recClassic"></div>
+      </button>
+      <button class="mode" data-act="show">
+        <div class="mi purple">S</div>
+        <div class="mm"><b>Show da Bencao</b><span>Escada de 20 perguntas: de 1 a 10.000. Bencoes garantidas nos patamares. Pular 3x, mais 50:50 e Cartas.</span></div>
+        <div class="rec" id="recShow"></div>
+      </button>
+      <button class="mode" data-act="survival">
+        <div class="mi red">S</div>
+        <div class="mm"><b>Sobrevivencia</b><span>Uma vida so. Errar encerra a rodada. Ate onde voce chega?</span></div>
+        <div class="rec" id="recSurv"></div>
+      </button>
+      <button class="mode" data-act="cats">
+        <div class="mi blue">C</div>
+        <div class="mm"><b>Por Categoria</b><span>Escolha um tema: personagens, milagres, versiculos e mais.</span></div>
+        <div class="rec" id="recCat"></div>
+      </button>
+      <button class="mode" data-act="stats">
+        <div class="mi gray">D</div>
+        <div class="mm"><b>Estatisticas</b><span>Seu historico de acertos, precisao e sequencias.</span></div>
+        <div class="rec">&nbsp;</div>
+      </button>
+    </div>
+    <div class="footer">NO PRINCIPIO ERA O VERBO &middot; JOAO 1:1 &middot; 100% OFFLINE</div>
+  </section>
+
+  <!-- ===== CATEGORIAS ===== -->
+  <section class="screen" id="scCats">
+    <h2 class="h2">ESCOLHA A CATEGORIA</h2>
+    <div class="catgrid" id="catGrid"></div>
+    <div class="backrow"><button class="linkbtn" data-act="home">&lsaquo; VOLTAR</button></div>
+  </section>
+
+  <!-- ===== JOGO ===== -->
+  <section class="screen" id="scGame">
+    <div class="hud">
+      <div class="lives" id="hudLives"></div>
+      <div class="meta" id="hudMeta"></div>
+      <div class="score" id="hudScore">0</div>
+    </div>
+    <div class="timerbar"><i id="timerfill"></i></div>
+    <div class="qtags">
+      <span class="tag" id="qCat"></span>
+      <span class="tag d" id="qDiff"></span>
+      <span class="tag hidden" id="qStreak"></span>
+      <span class="tag ladder hidden" id="showLadderBtn">ESCADA &#9662;</span>
+    </div>
+    <div class="qtext" id="qText"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb">
+      <div class="fh" id="fbHead"></div>
+      <div class="fx" id="fbText"></div>
+      <div class="fv" id="fbVerse"></div>
+    </div>
+    <button class="nextbtn hidden" id="nextBtn">CONTINUAR</button>
+    <div class="tools">
+      <button class="tool" id="tool50" title="Elimina duas respostas erradas">50:50</button>
+      <button class="tool" id="toolSkip" title="Passa a pergunta, sem penalidade (3 usar no Show)">PULAR</button>
+      <button class="tool hidden" id="toolCards" title="Revele uma carta: aponta uma sugestao de resposta">CARTA</button>
+      <button class="tool quit" id="toolQuit">SAIR</button>
+    </div>
+  </section>
+
+  <!-- ===== MODAL ESCADA ===== -->
+  <div class="ladder-modal hidden" id="ladderModal">
+    <div class="ladder-box">
+      <div class="ladder-head">ESCADA DA BENCAO</div>
+      <div class="ladder-list" id="ladderList"></div>
+      <button class="nextbtn" id="ladderClose">FECHAR</button>
+    </div>
+  </div>
+
+  <!-- ===== FIM ===== -->
+  <section class="screen" id="scEnd">
+    <div class="medal">
+      <div class="m" id="endMedal">A</div>
+      <div class="mt" id="endTitle"></div>
+      <div class="ms" id="endSub"></div>
+      <div><span class="newrec hidden" id="newRec">NOVO RECORDE</span></div>
+    </div>
+    <div class="endstats">
+      <div class="est"><div class="n" id="endScore">0</div><div class="l" id="endScoreLabel">PONTOS</div></div>
+      <div class="est"><div class="n" id="endHits">0</div><div class="l">ACERTOS</div></div>
+      <div class="est"><div class="n" id="endStreak">0</div><div class="l">MAIOR SEQ.</div></div>
+      <div class="est"><div class="n" id="endBest">0</div><div class="l">RECORDE</div></div>
+    </div>
+    <div class="endactions">
+      <button class="nextbtn" id="againBtn">JOGAR NOVAMENTE</button>
+      <button class="linkbtn" data-act="home">VOLTAR AO INICIO</button>
+    </div>
+  </section>
+
+  <!-- ===== ESTASTISTICAS ===== -->
+  <section class="screen" id="scStats">
+    <h2 class="h2">ESTATISTICAS</h2>
+    <div class="statlist" id="statList"></div>
+    <button class="clearbtn" id="clearBtn">APAGAR TODOS OS DADOS</button>
+    <div class="backrow"><button class="linkbtn" data-act="home">&lsaquo; VOLTAR</button></div>
+  </section>
+
+</div>
+
+<script src="banco.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
