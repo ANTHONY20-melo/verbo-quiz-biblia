@@ -67,7 +67,8 @@ function storeLoad() {
       totalHits: s.totalHits || 0,
       totalMiss: s.totalMiss || 0,
       bestStreak: s.bestStreak || 0,
-      sound: s.sound !== false
+      sound: s.sound !== false,
+      voz: s.voz !== false
     };
   } catch (e) {
     return defaultStore();
@@ -77,7 +78,7 @@ function storeLoad() {
 function defaultStore() {
   return {
     best: { classic: 0, survival: 0, categoria: 0, show: 0 },
-    games: 0, totalHits: 0, totalMiss: 0, bestStreak: 0, sound: true
+    games: 0, totalHits: 0, totalMiss: 0, bestStreak: 0, sound: true, voz: true
   };
 }
 
@@ -277,6 +278,14 @@ function toggleSound() {
   if (S.sound) sfxClick();
 }
 
+function toggleVoz() {
+  S.voz = !S.voz;
+  if (typeof Voz !== 'undefined') Voz.setAtivo(S.voz);
+  $('voiceBtn').classList.toggle('off', !S.voz);
+  storeSave();
+  if (S.voz && typeof Voz !== 'undefined') Voz.falar('Voz do narrador ativada.');
+}
+
 /* ---------- UTIL ---------- */
 function shuffle(arr) {
   var a = arr.slice();
@@ -435,6 +444,7 @@ function showQuestion() {
   $('qText').textContent = q.q;
   renderLives();
   renderHud();
+  if (typeof Voz !== 'undefined') Voz.falar(q.q);
 
   $('fb').className = 'fb';
   $('nextBtn').classList.add('hidden');
@@ -580,6 +590,9 @@ function feedbackShow(good, val) {
   }
   $('fbText').textContent = q.e;
   $('fbVerse').textContent = q.v ? ('REFERENCIA: ' + q.v) : '';
+  if (typeof Voz !== 'undefined') {
+    Voz.falar($('fbHead').textContent + '. ' + q.e);
+  }
 }
 
 function afterShowAnswer(wrong) {
@@ -680,6 +693,9 @@ function feedback(good, pts, timeout) {
   }
   $('fbText').textContent = q.e;
   $('fbVerse').textContent = q.v ? ('REFERENCIA: ' + q.v) : '';
+  if (typeof Voz !== 'undefined') {
+    Voz.falar($('fbHead').textContent + '. ' + q.e);
+  }
 }
 
 /* ---------- RECORDES ---------- */
@@ -926,6 +942,9 @@ function init() {
   });
   $('soundBtn').addEventListener('click', toggleSound);
   $('soundBtn').classList.toggle('off', !S.sound);
+  $('voiceBtn').addEventListener('click', toggleVoz);
+  $('voiceBtn').classList.toggle('off', !S.voz);
+  if (typeof Voz !== 'undefined') Voz.setAtivo(S.voz);
 
   $('nextBtn').addEventListener('click', function () {
     sfxClick();

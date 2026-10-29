@@ -31,9 +31,35 @@ Distribuicao: 40 faceis, 53 medias e 41 dificeis, em 7 categorias.
 - Timer com barra visuais (mais tempo em perguntas dificeis).
 - Sons gerados via WebAudio (sem arquivos), com botao para silenciar.
 - Trilha cinematografica no Show da Bencao: batimento cardiaco a partir do degrau 10, suspense a partir do degrau 15, fanfarra e aplausos nos checkpoints e na vitoria.
+- Narrador com a voz "Marcos" (ElevenLabs): le a pergunta e a explicacao. Botao no cabecalho liga/desliga.
 - Teclado: 1-4 respondem, Enter continua, F usa 50:50.
 - Recordes por modo + historico de acertos persistidos no navegador.
 - PWA instalavel (funciona offline depois da primeira visita): `manifest.json` + `sw.js` + icones gerados por `icone.ps1`.
+
+## Narrador (voz Marcos / ElevenLabs)
+
+Cadeia de tentativa do `voz.js`:
+
+1. `audio/<slug>.mp3` - audio pre-gerado, funciona 100% offline e sem custo por partida;
+2. `api/voz` - proxy Vercel que chama o ElevenLabs com a chave do ambiente (nunca no cliente);
+3. Web Speech API - voz nativa do navegador (sempre disponivel como reserva).
+
+Para gerar os MP3 offline (roda uma vez, exige a chave):
+
+```powershell
+$env:ELEVENLABS_API_KEY = "sk_..."
+cd projetos\quiz-biblia
+node gerar-audio.js
+```
+
+Para ativar a sintese em tempo real, defina a variavel no ambiente da Vercel:
+
+```powershell
+cd projetos\quiz-biblia
+vercel env add ELEVENLABS_API_KEY production
+```
+
+Variaveis reconhecidas: `ELEVENLABS_API_KEY`, `ULTRON_VOICE_ID` (padrao `xHUwLsLfyqiYOIVTzLRW`), `ULTRON_VOICE_MODEL` (padrao `eleven_multilingual_v2`).
 
 ## Instalar no celular
 1. Abra o endereco de producao no Chrome (Android) ou Safari (iOS).

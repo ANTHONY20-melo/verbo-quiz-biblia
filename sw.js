@@ -1,11 +1,12 @@
 /* VERBO - Service Worker: cache-first, app shell completo offline */
 'use strict';
 
-var CACHE = 'verbo-v2';
+var CACHE = 'verbo-v3';
 var ASSETS = [
   'index.html',
   'estilos.css',
   'banco.js',
+  'voz.js',
   'app.js',
   'manifest.json',
   'icon-192.png',

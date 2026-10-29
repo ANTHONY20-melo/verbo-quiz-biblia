@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/voz.js": {
+      "maxDuration": 30
+    }
+  }
+}
