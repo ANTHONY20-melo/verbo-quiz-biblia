@@ -112,6 +112,140 @@ function sfxTick() { beep(950, 0.05, 'square', 0.03); }
 function sfxClick() { beep(420, 0.06, 'triangle', 0.05); }
 function sfxTime() { beep(180, 0.3, 'sawtooth', 0.07); }
 
+/* ---------- Sons cinematograficos do Show (WebAudio sintetico) ---------- */
+var NOISE = null;
+
+function ctxIfOn() {
+  if (!S.sound) return null;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    return AC;
+  } catch (e) { return null; }
+}
+
+/* Buffer de ruido branco (2s) para plateia/sussurros */
+function noiseBuf(ctx) {
+  if (NOISE && NOISE.ctx === ctx) return NOISE.buf;
+  var len = ctx.sampleRate * 2;
+  var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  var data = buf.getChannelData(0);
+  for (var i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  NOISE = { ctx: ctx, buf: buf };
+  return buf;
+}
+
+/* Aplausos: rajadas de ruido com filtro passa-banda (micro-estalos aleatorios) */
+function sfxCrowd(big) {
+  var ctx = ctxIfOn();
+  if (!ctx) return;
+  try {
+    var dur = big ? 2.2 : 1.2;
+    var src = ctx.createBufferSource();
+    src.buffer = noiseBuf(ctx);
+    var band = ctx.createBiquadFilter();
+    band.type = 'bandpass';
+    band.frequency.value = 1100;
+    band.Q.value = 0.7;
+    var g = ctx.createGain();
+    var t = ctx.currentTime;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(big ? 0.18 : 0.09, t + 0.15);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(band); band.connect(g); g.connect(ctx.destination);
+    src.start(t);
+    src.stop(t + dur);
+    // micro-estalos de palmas por cima
+    var claps = big ? 14 : 7;
+    for (var i = 0; i < claps; i++) {
+      (function () {
+        var at = t + Math.random() * dur * 0.85;
+        var c = ctx.createBufferSource();
+        c.buffer = noiseBuf(ctx);
+        var bp = ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.value = 1600 + Math.random() * 900;
+        bp.Q.value = 6;
+        var cg = ctx.createGain();
+        cg.gain.setValueAtTime(0.14, at);
+        cg.gain.exponentialRampToValueAtTime(0.0001, at + 0.06);
+        c.connect(bp); bp.connect(cg); cg.connect(ctx.destination);
+        c.start(at);
+        c.stop(at + 0.07);
+      })();
+    }
+  } catch (e) { /* audio bloqueado */ }
+}
+
+/* Suspense: drone grave pulsante (dois osciladores desafinados) */
+function sfxSuspense() {
+  var ctx = ctxIfOn();
+  if (!ctx) return;
+  try {
+    var t = ctx.currentTime;
+    var dur = 2.4;
+    [55, 58.2].forEach(function (f, k) {
+      var o = ctx.createOscillator();
+      o.type = k === 0 ? 'sawtooth' : 'triangle';
+      o.frequency.value = f;
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.05, t + 0.6);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 260;
+      o.connect(lp); lp.connect(g); g.connect(ctx.destination);
+      o.start(t);
+      o.stop(t + dur);
+    });
+  } catch (e) { /* audio bloqueado */ }
+}
+
+/* Coracao batendo (degraus medianos): dois thumps graves */
+function sfxHeartbeat() {
+  var ctx = ctxIfOn();
+  if (!ctx) return;
+  try {
+    var t = ctx.currentTime;
+    [0, 0.28].forEach(function (off) {
+      var o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(64, t + off);
+      o.frequency.exponentialRampToValueAtTime(38, t + off + 0.12);
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.16, t + off);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + off + 0.13);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t + off);
+      o.stop(t + off + 0.14);
+    });
+  } catch (e) { /* audio bloqueado */ }
+}
+
+/* Fanfarra: 3 notas ascendentes + brilho (checkpoints e vitoria) */
+function sfxFanfare() {
+  var ctx = ctxIfOn();
+  if (!ctx) return;
+  try {
+    var t = ctx.currentTime;
+    var notes = [523, 659, 784];
+    if (G && G.showIdx === 19) notes = [523, 659, 784, 1047];
+    notes.forEach(function (f, i) {
+      var at = t + i * 0.16;
+      var o = ctx.createOscillator();
+      o.type = 'square';
+      o.frequency.value = f;
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.001, at);
+      g.gain.setValueAtTime(0.09, at + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, at + 0.34);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(at);
+      o.stop(at + 0.36);
+    });
+  } catch (e) { /* audio bloqueado */ }
+}
+
 /* ---------- NAVEGACAO ---------- */
 function go(screen) {
   var screens = document.querySelectorAll('.screen');
@@ -321,7 +455,13 @@ function showQuestion() {
     box.appendChild(b);
   }
 
-  if (!isShow) runTimer();
+  if (!isShow) {
+    runTimer();
+  } else if (G.showIdx >= 15) {
+    sfxSuspense();
+  } else if (G.showIdx >= 10) {
+    sfxHeartbeat();
+  }
 }
 
 /* ---------- TIMER ---------- */
@@ -408,7 +548,13 @@ function showAnswerFlow(btn, pick, all) {
     if (G.streak > G.bestStreak) G.bestStreak = G.streak;
     var val = LADDER[G.showIdx];
     G.score = val;
+    var isMilestone = LADDER_CHECKPOINTS.indexOf(G.showIdx) >= 0 || G.showIdx === 19;
     sfxOk();
+    if (isMilestone) {
+      // fanfarra nos patamares e no topo
+      setTimeout(function () { sfxFanfare(); }, 260);
+      setTimeout(function () { sfxCrowd(true); }, 520);
+    }
     feedbackShow(true, val);
     afterShowAnswer(false);
   } else {
@@ -493,7 +639,12 @@ function endShow(win) {
   $('endStreak').textContent = G.bestStreak;
   $('endBest').textContent = fmtBen(S.best.show || 0);
   $('newRec').classList.toggle('hidden', !isRecord);
-  if (isRecord) sfxOk();
+  if (win) {
+    sfxFanfare();
+    setTimeout(function () { sfxCrowd(true); }, 300);
+  } else if (isRecord) {
+    sfxOk();
+  }
   go('scEnd');
 }
 

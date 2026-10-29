@@ -6,6 +6,11 @@
 <meta name="description" content="VERBO - O jogo de perguntas e respostas da Biblia. Teste e aprofunde seu conhecimento das Escrituras.">
 <meta name="theme-color" content="#0d1117">
 <title>VERBO - Quiz da Biblia</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="VERBO">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -146,5 +151,10 @@
 
 <script src="banco.js"></script>
 <script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
+}
+</script>
 </body>
 </html>
