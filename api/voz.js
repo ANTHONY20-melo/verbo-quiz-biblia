@@ -7,6 +7,13 @@ var VOICE_ID = process.env.ULTRON_VOICE_ID || 'xHUwLsLfyqiYOIVTzLRW';
 var MODEL = process.env.ULTRON_VOICE_MODEL || 'eleven_multilingual_v2';
 var API = 'https://api.elevenlabs.io/v1';
 
+/* Vozes de reserva: a principal (Marcos) e uma voz da biblioteca liberada no plano
+   gratuito. Se a principal responder 402/403/404 (plano ou liberacao), usa a reserva. */
+var FALLBACKS = (process.env.ULTRON_VOICE_FALLBACKS || 'pNInz6obpgDQGcFmaJgB')
+  .split(',')
+  .map(function (id) { return id.trim(); })
+  .filter(Boolean);
+
 function responderJson(res, status, obj) {
   res.status(status).setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
@@ -26,6 +33,7 @@ module.exports = async function handler(req, res) {
     responderJson(res, 200, {
       configured: configurado,
       voiceId: VOICE_ID,
+      fallbacks: FALLBACKS,
       model: MODEL,
       language: 'pt-BR'
     });
@@ -56,45 +64,55 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  try {
-    var upstream = await fetch(
-      API + '/text-to-speech/' + encodeURIComponent(VOICE_ID) + '?output_format=mp3_44100_128',
-      {
-        method: 'POST',
-        headers: {
-          'xi-api-key': key.trim(),
-          'Content-Type': 'application/json',
-          Accept: 'audio/mpeg'
-        },
-        body: JSON.stringify({
-          text: texto,
-          model_id: MODEL,
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.2,
-            use_speaker_boost: true
-          }
-        })
+  var payloads = [
+    { text: texto, model_id: MODEL, voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.2, use_speaker_boost: true } }
+  ];
+  var cadeias = [VOICE_ID].concat(FALLBACKS);
+  var ultimoStatus = 502;
+  var ultimoDetail = '';
+
+  for (var i = 0; i < cadeias.length; i++) {
+    var voiceId = cadeias[i];
+    try {
+      var upstream = await fetch(
+        API + '/text-to-speech/' + encodeURIComponent(voiceId) + '?output_format=mp3_44100_128',
+        {
+          method: 'POST',
+          headers: {
+            'xi-api-key': key.trim(),
+            'Content-Type': 'application/json',
+            Accept: 'audio/mpeg'
+          },
+          body: JSON.stringify(payloads[0])
+        }
+      );
+
+      if (upstream.ok) {
+        var buf = Buffer.from(await upstream.arrayBuffer());
+        res.status(200);
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.setHeader('X-Voice-Id', voiceId);
+        res.end(buf);
+        return;
       }
-    );
 
-    if (!upstream.ok) {
-      var detalhe = '';
-      try { detalhe = (await upstream.text()).slice(0, 300); } catch (e) { /* ignora */ }
-      responderJson(res, upstream.status, { error: 'ElevenLabs respondeu ' + upstream.status, detail: detalhe });
-      return;
+      ultimoStatus = upstream.status;
+      try { ultimoDetail = (await upstream.text()).slice(0, 300); } catch (e) { ultimoDetail = ''; }
+
+      /* 402/403/404 = voz nao liberada nesta conta -> tenta a proxima */
+      if (upstream.status === 402 || upstream.status === 403 || upstream.status === 404) continue;
+      break;
+    } catch (err) {
+      ultimoStatus = 502;
+      ultimoDetail = err && err.message ? err.message : String(err);
+      break;
     }
-
-    var buf = Buffer.from(await upstream.arrayBuffer());
-    res.status(200);
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    res.end(buf);
-  } catch (err) {
-    responderJson(res, 502, {
-      error: 'Falha ao falar com o ElevenLabs',
-      detail: err && err.message ? err.message : String(err)
-    });
   }
+
+  responderJson(res, ultimoStatus, {
+    error: 'ElevenLabs nao respondeu a sintese',
+    detail: ultimoDetail,
+    voiceId: VOICE_ID
+  });
 };

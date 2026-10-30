@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    VERBO - Motor do jogo | vanilla JS, puro
    Modos: classica | survival | categoria | show
    Persistencia: localStorage (verbo_v1)
@@ -36,7 +36,7 @@ var G = {
   showIdx: 0
 };
 
-/* ---------- ESCADA DO SHOW DA BENCAO ----------
+/* ---------- ESCADA DO SHOW DA BÊNÇÃO ----------
    20 degraus. Checkpoints (garantidos) nos degraus 10 (500) e 15 (3.000).
    Topo: degrau 20 = 10.000 - mais garantido ainda quando conquistado. */
 var LADDER = [
@@ -296,7 +296,12 @@ function shuffle(arr) {
   return a;
 }
 
-function diffLabel(d) { return d === 1 ? 'FACIL' : (d === 2 ? 'MEDIA' : 'DIFICIL'); }
+function diffLabel(d) { return d === 1 ? 'FÃCIL' : (d === 2 ? 'MÃ‰DIA' : 'DIFÃCIL'); }
+
+/* linha larga: >= 980px ativa o layout de computador/TV (escada lateral) */
+function isWide() {
+  return typeof window.matchMedia === 'function' && window.matchMedia('(min-width: 980px)').matches;
+}
 
 /* Monta a lista de perguntas do modo escolhido.
    A resposta correta no banco e sempre a opcao 0 (guardo a resposta real),
@@ -329,7 +334,7 @@ function pointsFor(q) {
   return base + (q.d >= 2 ? timeBonus : Math.round(timeBonus / 2)) + streakBonus;
 }
 
-/* ---------- SHOW DA BENCAO ---------- */
+/* ---------- SHOW DA BÊNÇÃO ---------- */
 /* Deck de 20 perguntas em dificuldade progressiva: 8 faceis, 7 medias, 5 dificeis */
 function buildShowDeck() {
   var pool = QUESTIONS.slice();
@@ -373,6 +378,7 @@ function prepareHudForMode() {
   $('toolCards').classList.toggle('hidden', !isShow);
   var tbar = $('timerfill').parentElement;
   tbar.classList.toggle('hidden', isShow);
+  $('ladderSide').classList.toggle('hidden', !isShow || !isWide());
 }
 
 /* ---------- MOTOR DA PARTIDA ---------- */
@@ -418,6 +424,7 @@ function showQuestion() {
   if (isShow) {
     G.timeMax = 1;
     G.timeLeft = 1;
+    if (isWide()) renderLadder();
   } else {
     G.timeMax = timeMaxFor(q);
   }
@@ -432,7 +439,7 @@ function showQuestion() {
     ? ('DEGRAU ' + (G.showIdx + 1) + ' DE 20')
     : q.c.toUpperCase();
   $('qDiff').textContent = isShow
-    ? (fmtBen(LADDER[G.showIdx]) + ' BENCAOS')
+    ? (fmtBen(LADDER[G.showIdx]) + ' BÃŠNÃ‡Ã•ES')
     : diffLabel(q.d);
   var st = $('qStreak');
   if (G.streak >= 2) {
@@ -548,7 +555,7 @@ function onAnswer(ev) {
   renderHud();
 }
 
-/* Fluxo de resposta do Show da Bencao */
+/* Fluxo de resposta do SHOW DA BÊNÇÃO */
 function showAnswerFlow(btn, pick, all) {
   if (pick === G.correctAt) {
     btn.classList.add('ok');
@@ -584,7 +591,7 @@ function feedbackShow(good, val) {
   var fb = $('fb');
   fb.className = 'fb on ' + (good ? 'good' : 'wrong');
   if (good) {
-    $('fbHead').textContent = 'CERTO! + ' + fmtBen(val) + ' BENCAOS';
+    $('fbHead').textContent = 'CERTO! + ' + fmtBen(val) + ' BÃŠNÃ‡Ã•ES';
   } else {
     $('fbHead').textContent = 'ERRADO - A ESCADA TERMINA AQUI';
   }
@@ -601,7 +608,7 @@ function afterShowAnswer(wrong) {
     $('nextBtn').textContent = 'VER O QUE GARANTIU';
   } else if (G.showIdx >= 19) {
     G.nextAction = 'winShow';
-    $('nextBtn').textContent = 'RECEBER AS BENCAOS';
+    $('nextBtn').textContent = 'RECEBER AS BÃŠNÃ‡Ã•ES';
   } else {
     G.nextAction = 'nextShow';
     $('nextBtn').textContent = 'SUBIR O DEGRAU';
@@ -640,14 +647,14 @@ function endShow(win) {
   var acc = total ? Math.round((G.hits / total) * 100) : 0;
   $('endMedal').textContent = win ? 'D' : 'B';
   $('endMedal').style.fontSize = win ? '30px' : '32px';
-  $('endTitle').textContent = win ? 'SHOW DA BENCAO COMPLETO!' : 'A ESCADA TERMINOU';
+  $('endTitle').textContent = win ? 'SHOW DA BÃŠNÃ‡ÃƒO COMPLETO!' : 'A ESCADA TERMINOU';
   $('endSub').textContent = win
-    ? ('Você conquistou 10.000 Bencoes! ' + acc + '% de acerto.')
+    ? ('VocÃª conquistou 10.000 BÃªnÃ§Ãµes! ' + acc + '% de acerto.')
     : (finalVal > 0
-      ? ('Levou garantido: ' + fmtBen(finalVal) + ' Bencoes (' + acc + '% de acerto).')
+      ? ('Levou garantido: ' + fmtBen(finalVal) + ' BÃªnÃ§Ãµes (' + acc + '% de acerto).')
       : ('Sem patamar garantido desta vez (' + acc + '% de acerto).'));
   $('endScore').textContent = fmtBen(finalVal);
-  $('endScoreLabel').textContent = 'BENCAOS';
+  $('endScoreLabel').textContent = 'BÃŠNÃ‡Ã•ES';
   $('endHits').textContent = G.hits + (total ? '/' + total : '');
   $('endStreak').textContent = G.bestStreak;
   $('endBest').textContent = fmtBen(S.best.show || 0);
@@ -718,13 +725,13 @@ function endGame() {
   var acc = total ? Math.round((G.hits / total) * 100) : 0;
   var head, sub;
   if (acc >= 90 && G.score >= 1500) {
-    head = 'A'; sub = 'Notavel! Voce conhece as Escrituras em detalhes.';
+    head = 'A'; sub = 'NotÃ¡vel! VocÃª conhece as Escrituras em detalhes.';
   } else if (acc >= 70 || G.score >= 1000) {
     head = 'B'; sub = 'Muito bem! Estudo constante gera sabedoria.';
   } else if (acc >= 50) {
     head = 'C'; sub = 'Boa base. Continue explorando a Palavra.';
   } else {
-    head = '!'; sub = 'Todo expert fez quantas provas foi preciso. Tente de novo!';
+    head = '?'; sub = 'Todo estudante da Palavra jÃ¡ errou. Tente de novo!';
   }
   $('endMedal').textContent = head;
   $('endTitle').textContent = isRecord ? 'NOVO RECORDE' : 'PARTIDA CONCLUIDA';
@@ -827,8 +834,7 @@ function useSkip() {
 }
 
 /* ---------- MODAL DA ESCADA ---------- */
-function renderLadder() {
-  var list = $('ladderList');
+function renderLadderList(list) {
   list.innerHTML = '';
   // do topo para a base: degrau 20 no topo
   for (var i19 = 19; i19 >= 0; i19--) {
@@ -844,15 +850,20 @@ function renderLadder() {
       step.className = cls;
       var no = document.createElement('span');
       no.className = 'no';
-      no.textContent = (isAt ? ('VOCE AQUI ' + isCheckText(idx)) : ('Nv ' + (idx + 1) + (isCheck ? ' SEGURANCA' : '')));
+      no.textContent = (isAt ? ('VOCÃŠ AQUI ' + isCheckText(idx)) : ('Nv ' + (idx + 1) + (isCheck ? ' SEGURANÃ‡A' : '')));
       var val = document.createElement('span');
       val.className = 'val';
-      val.textContent = fmtBen(LADDER[idx]) + ' Bencaos';
+      val.textContent = fmtBen(LADDER[idx]) + ' BÃªnÃ§Ãµes';
       step.appendChild(no);
       step.appendChild(val);
       list.appendChild(step);
     })(i19);
   }
+}
+
+function renderLadder() {
+  renderLadderList($('ladderList'));
+  if ($('ladderListSide')) renderLadderList($('ladderListSide'));
 }
 
 function isCheckText(idx) {
@@ -903,10 +914,10 @@ function renderStats() {
     ['Partidas jogadas', String(S.games)],
     ['Acertos totais', String(S.totalHits)],
     ['Erros totais', String(S.totalMiss)],
-    ['Precisao geral', acc + '%'],
-    ['Maior sequencia', String(S.bestStreak)],
-    ['Recorde Classica', String(S.best.classic)],
-    ['Recorde Sobrevivencia', String(S.best.survival)],
+    ['PrecisÃ£o geral', acc + '%'],
+    ['Maior sequÃªncia', String(S.bestStreak)],
+    ['Recorde ClÃ¡ssica', String(S.best.classic)],
+    ['Recorde SobrevivÃªncia', String(S.best.survival)],
     ['Recorde Categoria', String(S.best.categoria)]
   ];
   var list = $('statList');
@@ -1008,3 +1019,4 @@ function init() {
 }
 
 init();
+

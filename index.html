@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="VERBO - O jogo de perguntas e respostas da Biblia. Teste e aprofunde seu conhecimento das Escrituras.">
+<meta name="description" content="VERBO - O jogo de Perguntas e respostas da Bíblia. Teste e aprofunde seu conhecimento das Escrituras.">
 <meta name="theme-color" content="#0d1117">
-<title>VERBO - Quiz da Biblia</title>
+<title>VERBO - Quiz da Bíblia</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,7 +23,7 @@
         <path d="M20 9 L20 33" stroke="#e0a41c" stroke-width="2.2"/>
         <path d="M20 1.5 L20 5.5" stroke="#f5c95c" stroke-width="2.2" stroke-linecap="round"/>
       </svg>
-      <div class="name">VERBO<small>QUIZ DA BIBLIA</small></div>
+      <div class="name">VERBO<small>QUIZ da Bíblia</small></div>
     </div>
     <button class="iconbtn" id="voiceBtn" title="Voz do narrador (Marcos)" aria-label="Voz">&#128266;</button>
     <button class="iconbtn" id="soundBtn" title="Som ligado ou desligado" aria-label="Som">&#9835;</button>
@@ -47,31 +47,31 @@
     <div class="modes">
       <button class="mode" data-act="classic">
         <div class="mi gold">P</div>
-        <div class="mm"><b>Partida Classica</b><span>10 perguntas, 3 vidas, dificuldade subindo. Vale recorde.</span></div>
+        <div class="mm"><b>Partida Clássica</b><span>10 perguntas, 3 vidas, dificuldade subindo. Vale recorde.</span></div>
         <div class="rec" id="recClassic"></div>
       </button>
       <button class="mode" data-act="show">
         <div class="mi purple">S</div>
-        <div class="mm"><b>Show da Bencao</b><span>Escada de 20 perguntas: de 1 a 10.000. Bencoes garantidas nos patamares. Pular 3x, mais 50:50 e Cartas.</span></div>
+        <div class="mm"><b>Show da Bênção</b><span>Escada de 20 perguntas: de 1 a 10.000. Bênções garantidas nos patamares. Pular 3x, mais 50:50 e Cartas.</span></div>
         <div class="rec" id="recShow"></div>
       </button>
       <button class="mode" data-act="survival">
         <div class="mi red">S</div>
-        <div class="mm"><b>Sobrevivencia</b><span>Uma vida so. Errar encerra a rodada. Ate onde voce chega?</span></div>
+        <div class="mm"><b>Sobrevivência</b><span>Uma vida so. Errar encerra a rodada. Ate onde voce chega?</span></div>
         <div class="rec" id="recSurv"></div>
       </button>
       <button class="mode" data-act="cats">
         <div class="mi blue">C</div>
-        <div class="mm"><b>Por Categoria</b><span>Escolha um tema: personagens, milagres, versiculos e mais.</span></div>
+        <div class="mm"><b>Por Categoria</b><span>Escolha um tema: personagens, milagres, versículos e mais.</span></div>
         <div class="rec" id="recCat"></div>
       </button>
       <button class="mode" data-act="stats">
         <div class="mi gray">D</div>
-        <div class="mm"><b>Estatisticas</b><span>Seu historico de acertos, precisao e sequencias.</span></div>
+        <div class="mm"><b>Estatísticas</b><span>Seu histórico de acertos, precisão e sequências.</span></div>
         <div class="rec">&nbsp;</div>
       </button>
     </div>
-    <div class="footer">NO PRINCIPIO ERA O VERBO &middot; JOAO 1:1 &middot; 100% OFFLINE</div>
+    <div class="footer">NO PRINCÍPIO ERA O VERBO &middot; JOÃO 1:1 &middot; 100% OFFLINE</div>
   </section>
 
   <!-- ===== CATEGORIAS ===== -->
@@ -105,16 +105,20 @@
     <button class="nextbtn hidden" id="nextBtn">CONTINUAR</button>
     <div class="tools">
       <button class="tool" id="tool50" title="Elimina duas respostas erradas">50:50</button>
-      <button class="tool" id="toolSkip" title="Passa a pergunta, sem penalidade (3 usar no Show)">PULAR</button>
-      <button class="tool hidden" id="toolCards" title="Revele uma carta: aponta uma sugestao de resposta">CARTA</button>
+      <button class="tool" id="toolSkip" title="Passa a pergunta; no Show consome uma das 3 chances">PULAR</button>
+      <button class="tool hidden" id="toolCards" title="Revele uma carta: aponta uma sugestão de resposta">CARTA</button>
       <button class="tool quit" id="toolQuit">SAIR</button>
     </div>
+    <aside class="ladder-side hidden" id="ladderSide">
+      <div class="ladder-head">ESCADA DA BÊNÇÃO</div>
+      <div class="ladder-list" id="ladderListSide"></div>
+    </aside>
   </section>
 
   <!-- ===== MODAL ESCADA ===== -->
   <div class="ladder-modal hidden" id="ladderModal">
     <div class="ladder-box">
-      <div class="ladder-head">ESCADA DA BENCAO</div>
+      <div class="ladder-head">ESCADA DA BÊNÇÃO</div>
       <div class="ladder-list" id="ladderList"></div>
       <button class="nextbtn" id="ladderClose">FECHAR</button>
     </div>
@@ -142,7 +146,7 @@
 
   <!-- ===== ESTASTISTICAS ===== -->
   <section class="screen" id="scStats">
-    <h2 class="h2">ESTATISTICAS</h2>
+    <h2 class="h2">Estatísticas</h2>
     <div class="statlist" id="statList"></div>
     <button class="clearbtn" id="clearBtn">APAGAR TODOS OS DADOS</button>
     <div class="backrow"><button class="linkbtn" data-act="home">&lsaquo; VOLTAR</button></div>
@@ -160,3 +164,4 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+

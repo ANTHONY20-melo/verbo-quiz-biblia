@@ -16,8 +16,11 @@ var vm = require('vm');
 
 var VOICE_ID = process.env.ULTRON_VOICE_ID || 'xHUwLsLfyqiYOIVTzLRW';
 var MODEL = process.env.ULTRON_VOICE_MODEL || 'eleven_multilingual_v2';
+var FALLBACKS = (process.env.ULTRON_VOICE_FALLBACKS || 'pNInz6obpgDQGcFmaJgB')
+  .split(',').map(function (id) { return id.trim(); }).filter(Boolean);
 var KEY = process.env.ELEVENLABS_API_KEY || '';
 var FORCAR = process.argv.indexOf('--forcar') >= 0;
+var COM_OPCOES = process.argv.indexOf('--com-opcoes') >= 0;
 var DIR_AUDIO = path.join(__dirname, 'audio');
 var API = 'https://api.elevenlabs.io/v1';
 
@@ -29,56 +32,84 @@ function slug(txt) {
   return h.toString(36);
 }
 
-/* Carrega o banco e extrai todos os textos que devem ser falados */
+/* Carrega o banco e extrai os textos que o narrador realmente fala:
+   pergunta + explicacao. Ordem de prioridade por dificuldade, porque o deck
+   do Show usa 8 faceis (d1), 7 medias (d2) e 5 dificeis (d3).
+   As opcoes NAO sao narradas pelo jogo, entao ficam de fora por padrao. */
 function coletarTextos() {
   var src = fs.readFileSync(path.join(__dirname, 'banco.js'), 'utf8').replace("'use strict';", '');
   var ctx = { console: console };
   vm.createContext(ctx);
   vm.runInContext(src, ctx);
   var qs = ctx.QUESTIONS || [];
-  var textos = {};
-  function add(t) {
-    if (!t) return;
-    var limpo = String(t).trim();
+
+  var grupos = { 1: [], 2: [], 3: [] };
+  var vistos = {};
+
+  function add(arr, texto) {
+    if (!texto) return;
+    var limpo = String(texto).trim();
     if (limpo === '') return;
-    textos[limpo] = true;
+    if (vistos[limpo]) return;
+    vistos[limpo] = true;
+    arr.push(limpo);
   }
+
   qs.forEach(function (q) {
-    add(q.q);
-    add(q.e);
-    (q.o || []).forEach(add);
+    var alvo = grupos[q.d] || grupos[3];
+    add(alvo, q.q);
+    add(alvo, q.e);
+    if (COM_OPCOES) (q.o || []).forEach(function (o) { add(grupos[3], o); });
   });
-  return Object.keys(textos);
+
+  return grupos[1].concat(grupos[2], grupos[3]);
 }
 
 async function sintetizar(texto) {
-  var r = await fetch(
-    API + '/text-to-speech/' + encodeURIComponent(VOICE_ID) + '?output_format=mp3_44100_128',
-    {
-      method: 'POST',
-      headers: {
-        'xi-api-key': KEY.trim(),
-        'Content-Type': 'application/json',
-        Accept: 'audio/mpeg'
-      },
-      body: JSON.stringify({
-        text: texto,
-        model_id: MODEL,
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-          style: 0.2,
-          use_speaker_boost: true
+  var cadeias = [VOICE_ID].concat(FALLBACKS);
+  var ultimoErro = null;
+  for (var i = 0; i < cadeias.length; i++) {
+    var voiceId = cadeias[i];
+    try {
+      var r = await fetch(
+        API + '/text-to-speech/' + encodeURIComponent(voiceId) + '?output_format=mp3_44100_128',
+        {
+          method: 'POST',
+          headers: {
+            'xi-api-key': KEY.trim(),
+            'Content-Type': 'application/json',
+            Accept: 'audio/mpeg'
+          },
+          body: JSON.stringify({
+            text: texto,
+            model_id: MODEL,
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.75,
+              style: 0.2,
+              use_speaker_boost: true
+            }
+          })
         }
-      })
+      );
+      if (r.ok) return Buffer.from(await r.arrayBuffer());
+      var det = '';
+      try { det = (await r.text()).slice(0, 200); } catch (e) { /* ignora */ }
+      ultimoErro = new Error('HTTP ' + r.status + ' voz ' + voiceId + ' ' + det);
+      if (r.status === 402 || r.status === 403 || r.status === 404) continue;
+      throw ultimoErro;
+    } catch (err) {
+      ultimoErro = err;
+      if (err instanceof Error && /HTTP (402|403|404)/.test(err.message)) continue;
+      throw err;
     }
-  );
-  if (!r.ok) {
-    var det = '';
-    try { det = (await r.text()).slice(0, 200); } catch (e) { /* ignora */ }
-    throw new Error('HTTP ' + r.status + ' ' + det);
   }
-  return Buffer.from(await r.arrayBuffer());
+  throw ultimoErro || new Error('nenhuma voz respondeu');
+}
+
+function quotaEsgotado(err) {
+  if (!err || !err.message) return false;
+  return /quota|character_limit_exceeded|too_many_requests|monthly credits/i.test(err.message);
 }
 
 async function main() {
@@ -91,7 +122,8 @@ async function main() {
   if (!fs.existsSync(DIR_AUDIO)) fs.mkdirSync(DIR_AUDIO, { recursive: true });
 
   var textos = coletarTextos();
-  console.log('Textos a narrar: ' + textos.length);
+  var caracteres = textos.reduce(function (t, x) { return t + x.length; }, 0);
+  console.log('Textos a narrar: ' + textos.length + ' (' + caracteres + ' caracteres)');
 
   var indice = {};
   var indicePath = path.join(DIR_AUDIO, 'indice.json');
@@ -99,7 +131,7 @@ async function main() {
     try { indice = JSON.parse(fs.readFileSync(indicePath, 'utf8')); } catch (e) { indice = {}; }
   }
 
-  var feitos = 0, pulados = 0, falhas = 0;
+  var feitos = 0, pulados = 0, falhas = 0, caracteresGastos = 0;
   for (var i = 0; i < textos.length; i++) {
     var texto = textos[i];
     var s = slug(texto);
@@ -113,8 +145,15 @@ async function main() {
       var buf = await sintetizar(texto);
       fs.writeFileSync(arquivo, buf);
       feitos++;
-      if (feitos % 10 === 0) console.log('  gerados ' + feitos + '/' + textos.length);
+      caracteresGastos += texto.length;
+      if (feitos % 10 === 0) console.log('  gerados ' + feitos + ' (' + caracteresGastos + ' caracteres)');
     } catch (err) {
+      if (quotaEsgotado(err)) {
+        console.error('');
+        console.error('QUOTA do ElevenLabs esgotado apos ' + feitos + ' audios (' + caracteresGastos + ' caracteres).');
+        console.error('O restante usa a voz nativa do navegador em tempo real.');
+        break;
+      }
       falhas++;
       console.error('  FALHOU (' + s + '): ' + err.message);
       await new Promise(function (r) { setTimeout(r, 800); });
@@ -122,7 +161,7 @@ async function main() {
   }
 
   fs.writeFileSync(indicePath, JSON.stringify(indice, null, 2), 'utf8');
-  console.log('Concluido: ' + feitos + ' gerados, ' + pulados + ' já existiam, ' + falhas + ' falhas.');
+  console.log('Concluido: ' + feitos + ' gerados, ' + pulados + ' ja existiam, ' + falhas + ' falhas, ' + caracteresGastos + ' caracteres usados.');
   if (falhas > 0) process.exit(1);
 }
 

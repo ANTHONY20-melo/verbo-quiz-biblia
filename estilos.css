@@ -179,3 +179,94 @@ body{
 .lstep.done{opacity:.55}
 .lstep.done .val{color:var(--mut)}
 .lstep.top .val{color:var(--gold2);font-size:13.5px}
+
+/* ============================================================
+   VERSÃO COMPUTADOR / TV (>= 980px)
+   Layout de duas colunas no jogo: pergunta à esquerda,
+   escada da bênção fixa à direita. Tela sempre centralizada.
+   ============================================================ */
+@media(min-width:980px){
+  .wrap{max-width:1180px;padding:24px 40px 48px}
+  header.top{gap:18px}
+
+  /* ----- inicio ----- */
+  .hero h1{font-size:64px}
+  .hero .sub{font-size:15px}
+  .versebox{max-width:640px;padding:16px 22px}
+  .versebox .vx{font-size:16px}
+  .homerecord{gap:14px}
+  .hchip{min-width:112px;padding:12px 20px}
+  .hchip .n{font-size:22px}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .mode{padding:16px 18px}
+  .mode .mm b{font-size:16.5px}
+  .mode .mm span{font-size:12.5px}
+  .mi{width:48px;height:48px;font-size:21px}
+  .catgrid{grid-template-columns:repeat(3,1fr)}
+  .cat{padding:18px 12px;font-size:13.5px}
+  .statlist{max-width:640px;margin:0 auto;width:100%}
+
+  /* ----- jogo: duas colunas ----- */
+  #scGame{display:grid;grid-template-columns:minmax(0,1fr) 320px;column-gap:40px;align-content:start}
+  #scGame .hud{grid-column:1}
+  #scGame .timerbar{grid-column:1}
+  #scGame .qtags{grid-column:1}
+  #scGame .qtext{grid-column:1;font-size:26px;line-height:1.5;padding:12px 0 24px}
+  #scGame .opts{grid-column:1;gap:11px}
+  #scGame .fb{grid-column:1}
+  #scGame .nextbtn{grid-column:1}
+  #scGame .tools{grid-column:1}
+  #ladderSide{grid-column:2;grid-row:1/span 10;align-self:start;position:sticky;top:24px}
+
+  .opt{font-size:16px;padding:15px 17px}
+  .opt .key{width:30px;height:30px;font-size:13px}
+  .fb .fx{font-size:13.5px}
+  .fb .fv{font-size:12px}
+  .tool{font-size:12.5px;padding:13px}
+  .endstats{grid-template-columns:repeat(4,1fr)}
+
+  /* painel lateral da escada */
+  .ladder-side{background:var(--panel);border:1px solid rgba(224,164,28,.45);border-radius:16px;padding:16px 12px 12px;box-shadow:0 0 44px rgba(224,164,28,.14);max-height:80vh;overflow:auto}
+  .ladder-side .ladder-head{font-size:14px;padding-bottom:12px}
+  .ladder-side .lstep{font-size:13px;padding:11px 14px;border-radius:12px}
+  .ladder-side .lstep .no{font-size:11px}
+}
+
+/* ============================================================
+   TV / TELAS GRANDES (>= 1600px)
+   Tipografia ampliada para leitura à distância.
+   ============================================================ */
+@media(min-width:1600px){
+  body{font-size:19px}
+  .wrap{max-width:1520px;padding:32px 64px 56px}
+  .brand .name{font-size:24px}
+  .hero h1{font-size:88px}
+  .hero .sub{font-size:18px}
+  .versebox{max-width:760px;padding:20px 26px}
+  .versebox .vx{font-size:19px}
+  .mode .mm b{font-size:19px}
+  .mode .mm span{font-size:14.5px}
+  .h2{font-size:22px}
+  .cat{font-size:16px;padding:22px 12px}
+  #scGame{grid-template-columns:minmax(0,1fr) 400px;column-gap:64px}
+  #scGame .qtext{font-size:33px}
+  .opt{font-size:20px;padding:19px 22px;gap:14px}
+  .opt .key{width:36px;height:36px;font-size:15px}
+  .qtags{font-size:13px}
+  .tag{font-size:11px;padding:5px 12px}
+  .fb .fh{font-size:16px}
+  .fb .fx{font-size:16.5px}
+  .fb .fv{font-size:14px}
+  .nextbtn{font-size:17px;padding:16px}
+  .tool{font-size:14.5px;padding:15px}
+  .hud{font-size:16px}
+  .hud .score{font-size:21px}
+  .est .n{font-size:30px}
+  .est .l{font-size:12px}
+  .endstats{gap:12px}
+  .ladder-side{padding:22px 16px 16px}
+  .ladder-side .lblock{font-size:16px}
+  .ladder-side .lstep{font-size:15.5px;padding:13px 16px}
+  .ladder-side .lstep .no{font-size:13px}
+  .ladder-side .ladder-head{font-size:17px}
+}
