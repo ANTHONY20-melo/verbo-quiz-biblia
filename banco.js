@@ -1,5 +1,5 @@
 /* ============================================================
-   VERBO - Banco de perguntas (162 questoes, 6 categorias)
+   VERBO - Banco de perguntas (168 questoes, 6 categorias)
    Do basico ao profundo: 3 niveis de dificuldade.
    ============================================================ */
 'use strict';
