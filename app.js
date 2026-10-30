@@ -296,7 +296,7 @@ function shuffle(arr) {
   return a;
 }
 
-function diffLabel(d) { return d === 1 ? 'FÃCIL' : (d === 2 ? 'MÃ‰DIA' : 'DIFÃCIL'); }
+function diffLabel(d) { return d === 1 ? 'FÁCIL' : (d === 2 ? 'MÉDIA' : 'DIFÍCIL'); }
 
 /* linha larga: >= 980px ativa o layout de computador/TV (escada lateral) */
 function isWide() {
@@ -439,7 +439,7 @@ function showQuestion() {
     ? ('DEGRAU ' + (G.showIdx + 1) + ' DE 20')
     : q.c.toUpperCase();
   $('qDiff').textContent = isShow
-    ? (fmtBen(LADDER[G.showIdx]) + ' BÃŠNÃ‡Ã•ES')
+    ? (fmtBen(LADDER[G.showIdx]) + ' BÊNÇÕES')
     : diffLabel(q.d);
   var st = $('qStreak');
   if (G.streak >= 2) {
@@ -591,7 +591,7 @@ function feedbackShow(good, val) {
   var fb = $('fb');
   fb.className = 'fb on ' + (good ? 'good' : 'wrong');
   if (good) {
-    $('fbHead').textContent = 'CERTO! + ' + fmtBen(val) + ' BÃŠNÃ‡Ã•ES';
+    $('fbHead').textContent = 'CERTO! + ' + fmtBen(val) + ' BÊNÇÕES';
   } else {
     $('fbHead').textContent = 'ERRADO - A ESCADA TERMINA AQUI';
   }
@@ -608,7 +608,7 @@ function afterShowAnswer(wrong) {
     $('nextBtn').textContent = 'VER O QUE GARANTIU';
   } else if (G.showIdx >= 19) {
     G.nextAction = 'winShow';
-    $('nextBtn').textContent = 'RECEBER AS BÃŠNÃ‡Ã•ES';
+    $('nextBtn').textContent = 'RECEBER AS BÊNÇÕES';
   } else {
     G.nextAction = 'nextShow';
     $('nextBtn').textContent = 'SUBIR O DEGRAU';
@@ -647,14 +647,14 @@ function endShow(win) {
   var acc = total ? Math.round((G.hits / total) * 100) : 0;
   $('endMedal').textContent = win ? 'D' : 'B';
   $('endMedal').style.fontSize = win ? '30px' : '32px';
-  $('endTitle').textContent = win ? 'SHOW DA BÃŠNÃ‡ÃƒO COMPLETO!' : 'A ESCADA TERMINOU';
+  $('endTitle').textContent = win ? 'SHOW DA BÊNÇÃO COMPLETO!' : 'A ESCADA TERMINOU';
   $('endSub').textContent = win
-    ? ('VocÃª conquistou 10.000 BÃªnÃ§Ãµes! ' + acc + '% de acerto.')
+    ? ('Você conquistou 10.000 Bênções! ' + acc + '% de acerto.')
     : (finalVal > 0
-      ? ('Levou garantido: ' + fmtBen(finalVal) + ' BÃªnÃ§Ãµes (' + acc + '% de acerto).')
+      ? ('Levou garantido: ' + fmtBen(finalVal) + ' Bênções (' + acc + '% de acerto).')
       : ('Sem patamar garantido desta vez (' + acc + '% de acerto).'));
   $('endScore').textContent = fmtBen(finalVal);
-  $('endScoreLabel').textContent = 'BÃŠNÃ‡Ã•ES';
+  $('endScoreLabel').textContent = 'BÊNÇÕES';
   $('endHits').textContent = G.hits + (total ? '/' + total : '');
   $('endStreak').textContent = G.bestStreak;
   $('endBest').textContent = fmtBen(S.best.show || 0);
@@ -725,13 +725,13 @@ function endGame() {
   var acc = total ? Math.round((G.hits / total) * 100) : 0;
   var head, sub;
   if (acc >= 90 && G.score >= 1500) {
-    head = 'A'; sub = 'NotÃ¡vel! VocÃª conhece as Escrituras em detalhes.';
+    head = 'A'; sub = 'Notável! Você conhece as Escrituras em detalhes.';
   } else if (acc >= 70 || G.score >= 1000) {
     head = 'B'; sub = 'Muito bem! Estudo constante gera sabedoria.';
   } else if (acc >= 50) {
     head = 'C'; sub = 'Boa base. Continue explorando a Palavra.';
   } else {
-    head = '?'; sub = 'Todo estudante da Palavra jÃ¡ errou. Tente de novo!';
+    head = '?'; sub = 'Todo estudante da Palavra já errou. Tente de novo!';
   }
   $('endMedal').textContent = head;
   $('endTitle').textContent = isRecord ? 'NOVO RECORDE' : 'PARTIDA CONCLUIDA';
@@ -850,10 +850,10 @@ function renderLadderList(list) {
       step.className = cls;
       var no = document.createElement('span');
       no.className = 'no';
-      no.textContent = (isAt ? ('VOCÃŠ AQUI ' + isCheckText(idx)) : ('Nv ' + (idx + 1) + (isCheck ? ' SEGURANÃ‡A' : '')));
+      no.textContent = (isAt ? ('VOCÊ AQUI ' + isCheckText(idx)) : ('Nv ' + (idx + 1) + (isCheck ? ' SEGURANÇA' : '')));
       var val = document.createElement('span');
       val.className = 'val';
-      val.textContent = fmtBen(LADDER[idx]) + ' BÃªnÃ§Ãµes';
+      val.textContent = fmtBen(LADDER[idx]) + ' Bênções';
       step.appendChild(no);
       step.appendChild(val);
       list.appendChild(step);
@@ -914,10 +914,10 @@ function renderStats() {
     ['Partidas jogadas', String(S.games)],
     ['Acertos totais', String(S.totalHits)],
     ['Erros totais', String(S.totalMiss)],
-    ['PrecisÃ£o geral', acc + '%'],
-    ['Maior sequÃªncia', String(S.bestStreak)],
-    ['Recorde ClÃ¡ssica', String(S.best.classic)],
-    ['Recorde SobrevivÃªncia', String(S.best.survival)],
+    ['Precisão geral', acc + '%'],
+    ['Maior sequência', String(S.bestStreak)],
+    ['Recorde Clássica', String(S.best.classic)],
+    ['Recorde Sobrevivência', String(S.best.survival)],
     ['Recorde Categoria', String(S.best.categoria)]
   ];
   var list = $('statList');
