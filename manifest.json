@@ -4,8 +4,9 @@
   "description": "Jogo de perguntas e respostas sobre a Biblia, com modo Show da Bencao.",
   "start_url": ".",
   "scope": ".",
-  "display": "standalone",
-  "orientation": "portrait",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
   "background_color": "#0d1117",
   "theme_color": "#0d1117",
   "icons": [

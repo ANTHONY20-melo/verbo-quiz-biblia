@@ -39,6 +39,12 @@ body{
 .iconbtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--mut);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .iconbtn:hover{color:var(--gold2);border-color:var(--gold)}
 .iconbtn.off{opacity:.4}
+.iconbtn.fson{color:var(--gold2);border-color:var(--gold)}
+.iconbtn:active{transform:scale(.92)}
+
+/* Tela cheia: o jogo ocupa a viewport inteira com espaçamento confortavel */
+body:fullscreen{align-items:center;cursor:auto}
+body:-webkit-full-screen{align-items:center}
 
 /* ===== SCREENS ===== */
 .screen{display:none;flex-direction:column;flex:1}
