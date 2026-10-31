@@ -68,8 +68,7 @@ function storeLoad() {
       totalMiss: s.totalMiss || 0,
       bestStreak: s.bestStreak || 0,
       sound: s.sound !== false,
-      voz: s.voz !== false,
-      fs: (typeof s.fs === 'boolean') ? s.fs : undefined
+      voz: s.voz !== false
     };
   } catch (e) {
     return defaultStore();
@@ -79,7 +78,7 @@ function storeLoad() {
 function defaultStore() {
   return {
     best: { classic: 0, survival: 0, categoria: 0, show: 0 },
-    games: 0, totalHits: 0, totalMiss: 0, bestStreak: 0, sound: true, voz: true, fs: undefined
+    games: 0, totalHits: 0, totalMiss: 0, bestStreak: 0, sound: true, voz: true
   };
 }
 
@@ -113,88 +112,6 @@ function sfxBad() { beep(220, 0.25, 'sawtooth', 0.06); }
 function sfxTick() { beep(950, 0.05, 'square', 0.03); }
 function sfxClick() { beep(420, 0.06, 'triangle', 0.05); }
 function sfxTime() { beep(180, 0.3, 'sawtooth', 0.07); }
-
-/* ---------- TELA CHEIA (desktop/notebook abre so o jogo) ---------- */
-var FS_ICON = '&#9974;'; /* ⛶ */
-
-function fsElement() {
-  return document.fullscreenElement || document.webkitFullscreenElement ||
-         document.mozFullScreenElement || document.msFullscreenElement || null;
-}
-
-function fsRequest(el) {
-  var fn = el.requestFullscreen || el.webkitRequestFullscreen ||
-           el.mozRequestFullScreen || el.msRequestFullscreen;
-  if (!fn) return false;
-  try { var r = fn.call(el); if (r && r.catch) r.catch(function () { /* negado */ }); return true; }
-  catch (e) { return false; }
-}
-
-function fsExit() {
-  var fn = document.exitFullscreen || document.webkitExitFullscreen ||
-           document.mozCancelFullScreen || document.msExitFullscreen;
-  if (fn) try { fn.call(document); } catch (e) { /* nada */ }
-}
-
-function toggleFullscreen() {
-  if (fsElement()) {
-    fsExit();
-    S.fs = false;
-  } else {
-    var ok = fsRequest(document.documentElement);
-    if (ok) S.fs = true;
-  }
-  storeSave();
-  fsSync();
-}
-
-function fsSync() {
-  var b = $('fsBtn');
-  if (!b) return;
-  var on = fsElement() !== null;
-  if (on) {
-    /* Botao vira SAIR da tela cheia */
-    b.innerHTML = '&times;';
-    b.title = 'Sair da tela cheia (Esc)';
-    b.setAttribute('aria-label', 'Sair da tela cheia (Esc)');
-    b.classList.add('fson');
-  } else {
-    b.innerHTML = '&#9974;';
-    b.title = 'Tela cheia (só o jogo)';
-    b.setAttribute('aria-label', 'Tela cheia (só o jogo)');
-    b.classList.remove('fson');
-  }
-}
-
-/* ESC sai da tela cheia em qualquer tela (navegador ja faz nativamente;
-   garantimos aqui tambem para apps instalados e Safari antigo) */
-document.addEventListener('keydown', function (ev) {
-  if (ev.key === 'Escape' && fsElement()) {
-    fsExit();
-    S.fs = false;
-    storeSave();
-    setTimeout(fsSync, 60);
-  }
-});
-
-/* Tela cheia automatica no desktop: browsers exigem um gesto do usuario,
-   entao entra no PRIMEIRO clique/tecla apos carregar (desktop = sem touch). */
-function fsArmAuto() {
-  try {
-    var touch = window.matchMedia('(pointer: coarse)').matches;
-    var installed = window.matchMedia('(display-mode: fullscreen)').matches ||
-                    window.matchMedia('(display-mode: standalone)').matches;
-    if (touch || installed || S.fs === false) return; /* celular ou usuario desligou */
-    var enter = function () {
-      document.removeEventListener('pointerdown', enter, true);
-      document.removeEventListener('keydown', enter, true);
-      if (!fsElement() && S.fs !== false) fsRequest(document.documentElement);
-      fsSync();
-    };
-    document.addEventListener('pointerdown', enter, true);
-    document.addEventListener('keydown', enter, true);
-  } catch (e) { /* sem matchMedia */ }
-}
 
 /* ---------- Sons cinematograficos do Show (WebAudio sintetico) ---------- */
 var NOISE = null;
@@ -1039,15 +956,6 @@ function init() {
   $('voiceBtn').addEventListener('click', toggleVoz);
   $('voiceBtn').classList.toggle('off', !S.voz);
   if (typeof Voz !== 'undefined') Voz.setAtivo(S.voz);
-  $('fsBtn').addEventListener('click', function () {
-    sfxClick();
-    toggleFullscreen();
-  });
-  ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(function (evName) {
-    document.addEventListener(evName, fsSync);
-  });
-  fsSync();
-  fsArmAuto();
 
   $('nextBtn').addEventListener('click', function () {
     sfxClick();
@@ -1105,15 +1013,6 @@ function init() {
       if (b && !b.classList.contains('lock')) b.click();
     }
     if (k === 'f' || k === 'F') useFifty();
-  });
-
-  // tela cheia: T alterna (apenas fora do jogo, para nao conflitar); F11/Esc nativos tambem funcionam
-  document.addEventListener('keydown', function (ev) {
-    if (G.screen === 'scGame') return;
-    var alvo = ev.target || {};
-    var tag = (alvo.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'textarea') return;
-    if (ev.key === 't' || ev.key === 'T') toggleFullscreen();
   });
 
   refreshHome();
