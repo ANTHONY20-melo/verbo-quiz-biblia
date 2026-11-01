@@ -78,6 +78,7 @@ body{
 .cat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 10px;cursor:pointer;text-align:center;font-size:12.5px;font-weight:bold;color:var(--txt);font-family:inherit;transition:all .12s}
 .cat:hover{border-color:var(--gold);transform:translateY(-2px)}
 .cat small{display:block;margin-top:4px;font-weight:normal;color:var(--mut);font-size:10px}
+.cat em{display:block;margin-top:3px;font-style:normal;font-size:9.5px;font-weight:bold;letter-spacing:.12em;color:var(--ok)}
 .backrow{margin-top:18px;text-align:center}
 .linkbtn{background:none;border:none;color:var(--mut);font-size:12.5px;letter-spacing:.1em;cursor:pointer;font-family:inherit;padding:8px 14px}
 .linkbtn:hover{color:var(--gold2)}
@@ -96,6 +97,8 @@ body{
 .qtags{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
 .tag{font-size:9px;letter-spacing:.12em;font-weight:bold;color:var(--gold2);border:1px solid rgba(224,164,28,.4);border-radius:99px;padding:4px 9px}
 .tag.d{color:var(--sky);border-color:rgba(77,163,255,.4)}
+.tag.timer{color:var(--sky);border-color:rgba(77,163,255,.4);min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
+.tag.timer.low{color:var(--bad);border-color:rgba(224,82,82,.55);animation:pulse 1s infinite}
 .qtext{font-family:Georgia,serif;font-size:19.5px;line-height:1.45;padding:4px 0 16px;text-align:center}
 .opts{display:flex;flex-direction:column;gap:9px}
 .opt{display:flex;align-items:center;gap:11px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;text-align:left;color:var(--txt);font-size:14.5px;font-family:inherit;line-height:1.4;transition:all .12s}
@@ -130,6 +133,8 @@ body{
 .tool:hover:not(:disabled){color:var(--gold2);border-color:var(--gold)}
 .tool:disabled{opacity:.3;cursor:default}
 .tool.quit{max-width:80px}
+.tool.finish{color:var(--ok);border-color:rgba(63,185,106,.45)}
+.tool.finish:hover:not(:disabled){color:#fff;background:var(--ok);border-color:var(--ok)}
 
 /* ===== END ===== */
 .endstats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:22px}

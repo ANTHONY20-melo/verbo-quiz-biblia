@@ -8,6 +8,7 @@
 <title>VERBO - Quiz da Bíblia</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="VERBO">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -92,6 +93,7 @@
     <div class="qtags">
       <span class="tag" id="qCat"></span>
       <span class="tag d" id="qDiff"></span>
+      <span class="tag timer hidden" id="qTimer">&#9203; --s</span>
       <span class="tag hidden" id="qStreak"></span>
       <span class="tag ladder hidden" id="showLadderBtn">ESCADA &#9662;</span>
     </div>
@@ -107,7 +109,8 @@
       <button class="tool" id="tool50" title="Elimina duas respostas erradas">50:50</button>
       <button class="tool" id="toolSkip" title="Passa a pergunta; no Show consome uma das 3 chances">PULAR</button>
       <button class="tool hidden" id="toolCards" title="Revele uma carta: aponta uma sugestão de resposta">CARTA</button>
-      <button class="tool quit" id="toolQuit">SAIR</button>
+      <button class="tool finish" id="toolFinish" title="Encerra a rodada agora e mostra o resultado com o placar atual">FINALIZAR</button>
+      <button class="tool quit" id="toolQuit" title="Abandona a rodada sem registrar o placar">SAIR</button>
     </div>
     <aside class="ladder-side hidden" id="ladderSide">
       <div class="ladder-head">ESCADA DA BÊNÇÃO</div>
@@ -136,7 +139,7 @@
       <div class="est"><div class="n" id="endScore">0</div><div class="l" id="endScoreLabel">PONTOS</div></div>
       <div class="est"><div class="n" id="endHits">0</div><div class="l">ACERTOS</div></div>
       <div class="est"><div class="n" id="endStreak">0</div><div class="l">MAIOR SEQ.</div></div>
-      <div class="est"><div class="n" id="endBest">0</div><div class="l">RECORDE</div></div>
+      <div class="est"><div class="n" id="endBest">0</div><div class="l" id="endBestLabel">RECORDE</div></div>
     </div>
     <div class="endactions">
       <button class="nextbtn" id="againBtn">JOGAR NOVAMENTE</button>

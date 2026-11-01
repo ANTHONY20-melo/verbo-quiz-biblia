@@ -63,6 +63,7 @@ function storeLoad() {
     if (!s || typeof s !== 'object') return defaultStore();
     return {
       best: s.best || { classic: 0, survival: 0, categoria: 0, show: 0 },
+      catBest: s.catBest || {},
       games: s.games || 0,
       totalHits: s.totalHits || 0,
       totalMiss: s.totalMiss || 0,
@@ -78,8 +79,17 @@ function storeLoad() {
 function defaultStore() {
   return {
     best: { classic: 0, survival: 0, categoria: 0, show: 0 },
+    catBest: {},
     games: 0, totalHits: 0, totalMiss: 0, bestStreak: 0, sound: true, voz: true
   };
+}
+
+/* melhor acerto registrado em cada categoria (ex: PERSONAGENS: 7) */
+function bestCatHits() {
+  var b = 0, k;
+  var cb = S.catBest || {};
+  for (k in cb) { if (cb[k] > b) b = cb[k]; }
+  return b;
 }
 
 function storeSave() {
@@ -258,13 +268,14 @@ function go(screen) {
 }
 
 function refreshHome() {
-  var maxBest = Math.max(S.best.classic, S.best.survival, S.best.categoria, S.best.show || 0);
+  var maxBest = Math.max(S.best.classic, S.best.survival, S.best.categoria, S.best.show || 0, bestCatHits());
   $('homeRec').textContent = fmtBen(maxBest);
   $('homeGames').textContent = S.games;
   $('homeStreak').textContent = S.bestStreak;
   $('recClassic').textContent = S.best.classic ? 'rec ' + S.best.classic : '';
   $('recSurv').textContent = S.best.survival ? 'rec ' + S.best.survival : '';
-  $('recCat').textContent = S.best.categoria ? 'rec ' + S.best.categoria : '';
+  var recCat = bestCatHits();
+  $('recCat').textContent = recCat ? 'rec ' + recCat : '';
   $('recShow').textContent = S.best.show ? ('rec ' + fmtBen(S.best.show)) : '';
   var p = VERSES[Math.floor(Math.random() * VERSES.length)];
   $('homeVerse').innerHTML = '\u202A' + p.t + '\u202C';
@@ -378,6 +389,7 @@ function prepareHudForMode() {
   $('toolCards').classList.toggle('hidden', !isShow);
   var tbar = $('timerfill').parentElement;
   tbar.classList.toggle('hidden', isShow);
+  $('qTimer').classList.toggle('hidden', isShow);
   $('ladderSide').classList.toggle('hidden', !isShow || !isWide());
 }
 
@@ -505,6 +517,9 @@ function updateTimerUI() {
   $('timerfill').style.width = pct + '%';
   var bar = $('timerfill').parentElement;
   bar.className = 'timerbar' + (pct <= 25 ? ' low' : '');
+  var chip = $('qTimer');
+  chip.textContent = '\u23F1 ' + Math.max(0, G.timeLeft) + 's';
+  chip.classList.toggle('low', pct <= 25);
 }
 
 function timeOut() {
@@ -628,13 +643,12 @@ function guaranteedShowValue(idx) {
 }
 
 function endShow(win) {
+  if (G.screen !== 'scGame') return; // evita contagem dupla
   stopTimer();
   var finalVal;
-  if (win) {
-    finalVal = LADDER[19];
-  } else {
-    finalVal = guaranteedShowValue(G.showIdx);
-  }
+  finalVal = win
+    ? LADDER[19]
+    : guaranteedShowValue(G.showIdx);
   var isRecord = finalVal > (S.best.show || 0);
   if (isRecord) S.best.show = finalVal;
   S.games++;
@@ -711,10 +725,19 @@ function storeKeyFor(mode) {
 }
 
 function endGame() {
-  stopTimer();
+  if (G.screen !== 'scGame') return; // evita contagem dupla (Enter + FINALIZAR)
   var keyStore = storeKeyFor(G.mode);
-  var isRecord = G.score > (S.best[keyStore] || 0);
-  if (isRecord) S.best[keyStore] = G.score;
+  var isCat = G.mode === 'categoria';
+  /* No modo categoria o placar vale ACERTOS (zera a cada categoria) e o
+     recorde e registrado por categoria (ex: PERSONAGENS: 7). */
+  var displayScore = isCat ? G.hits : G.score;
+  var isRecord = isCat
+    ? (displayScore > (S.catBest[G.cat] || 0))
+    : (displayScore > (S.best[keyStore] || 0));
+  if (isRecord) {
+    if (isCat) S.catBest[G.cat] = displayScore;
+    else S.best[keyStore] = displayScore;
+  }
   S.games++;
   S.totalHits += G.hits;
   S.totalMiss += G.misses;
@@ -734,13 +757,16 @@ function endGame() {
     head = '?'; sub = 'Todo estudante da Palavra já errou. Tente de novo!';
   }
   $('endMedal').textContent = head;
-  $('endTitle').textContent = isRecord ? 'NOVO RECORDE' : 'PARTIDA CONCLUIDA';
+  $('endTitle').textContent = isRecord
+    ? (isCat ? 'NOVO RECORDE DE ' + String((G.cat || '').toUpperCase()) : 'NOVO RECORDE')
+    : 'PARTIDA CONCLUIDA';
   $('endSub').textContent = sub + ' (' + acc + '% de acerto)';
-  $('endScore').textContent = fmtBen(G.score);
-  $('endScoreLabel').textContent = 'PONTOS';
+  $('endScore').textContent = fmtBen(displayScore);
+  $('endScoreLabel').textContent = isCat ? 'ACERTOS' : 'PONTOS';
   $('endHits').textContent = G.hits + (total ? '/' + total : '');
   $('endStreak').textContent = G.bestStreak;
-  $('endBest').textContent = fmtBen(S.best[keyStore] || 0);
+  $('endBest').textContent = fmtBen(isCat ? (S.catBest[G.cat] || 0) : (S.best[keyStore] || 0));
+  $('endBestLabel').textContent = isCat ? 'MELHOR DA CATEGORIA' : 'RECORDE';
   $('newRec').classList.toggle('hidden', !isRecord);
   if (isRecord) sfxOk();
   go('scEnd');
@@ -767,7 +793,9 @@ function updateLives() {
 
 function renderHud() {
   var isShow = G.mode === 'show';
-  $('hudScore').textContent = isShow ? fmtBen(LADDER[G.showIdx]) : G.score;
+  $('hudScore').textContent = isShow
+    ? fmtBen(LADDER[G.showIdx])
+    : (G.mode === 'categoria' ? String(G.hits) : fmtBen(G.score));
   $('hudMeta').textContent = isShow
     ? ('Nv ' + (G.showIdx + 1) + '/20')
     : (G.mode === 'survival'
@@ -887,6 +915,16 @@ function quitGame() {
   refreshHome();
 }
 
+/* ---------- FINALIZAR ---------- */
+/* Encerra a rodada na hora, aproveitando o placar atual (sem responder tudo) */
+function finishGame() {
+  if (G.screen !== 'scGame') return;
+  sfxClick();
+  stopTimer();
+  if (G.mode === 'show') return endShow(false);
+  return endGame();
+}
+
 /* ---------- CATEGORIAS ---------- */
 function renderCats() {
   var cats = {};
@@ -901,6 +939,12 @@ function renderCats() {
     var b = document.createElement('button');
     b.className = 'cat';
     b.innerHTML = name + '<small>' + cats[name].n + ' perguntas</small>';
+    var rec = S.catBest[name] || 0;
+    if (rec) { // badge do melhor acerto gravado desta categoria
+      var em = document.createElement('em');
+      em.textContent = 'REC ' + rec;
+      b.appendChild(em);
+    }
     b.addEventListener('click', function () { startGame('categoria', name); });
     grid.appendChild(b);
   });
@@ -918,7 +962,8 @@ function renderStats() {
     ['Maior sequência', String(S.bestStreak)],
     ['Recorde Clássica', String(S.best.classic)],
     ['Recorde Sobrevivência', String(S.best.survival)],
-    ['Recorde Categoria', String(S.best.categoria)]
+    ['Recorde Categoria (acertos)', String(bestCatHits())],
+    ['Recorde Show da Bênção', fmtBen(S.best.show || 0)]
   ];
   var list = $('statList');
   list.innerHTML = '';
@@ -994,6 +1039,7 @@ function init() {
   $('tool50').addEventListener('click', useFifty);
   $('toolSkip').addEventListener('click', useSkip);
   $('toolQuit').addEventListener('click', quitGame);
+  $('toolFinish').addEventListener('click', finishGame);
   $('toolCards').addEventListener('click', useCards);
   $('showLadderBtn').addEventListener('click', openLadder);
   $('ladderClose').addEventListener('click', closeLadder);

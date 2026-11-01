@@ -1,7 +1,7 @@
 /* VERBO - Service Worker: cache-first, app shell completo offline */
 'use strict';
 
-var CACHE = 'verbo-v7';
+var CACHE = 'verbo-v8';
 var ASSETS = [
   'index.html',
   'estilos.css',
