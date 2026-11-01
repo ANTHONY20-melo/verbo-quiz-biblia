@@ -64,6 +64,7 @@ function storeLoad() {
     return {
       best: s.best || { classic: 0, survival: 0, categoria: 0, show: 0 },
       catBest: s.catBest || {},
+      catLevel: (typeof s.catLevel === 'number' && s.catLevel >= 0 && s.catLevel <= 3) ? s.catLevel : 0,
       games: s.games || 0,
       totalHits: s.totalHits || 0,
       totalMiss: s.totalMiss || 0,
@@ -80,6 +81,7 @@ function defaultStore() {
   return {
     best: { classic: 0, survival: 0, categoria: 0, show: 0 },
     catBest: {},
+    catLevel: 0,
     games: 0, totalHits: 0, totalMiss: 0, bestStreak: 0, sound: true, voz: true
   };
 }
@@ -90,6 +92,17 @@ function bestCatHits() {
   var cb = S.catBest || {};
   for (k in cb) { if (cb[k] > b) b = cb[k]; }
   return b;
+}
+
+/* rótulo do nível: 1 FACIL, 2 MEDIO, 3 DIFICIL ('' = TODOS) */
+function levelLabel(l) {
+  return l === 1 ? 'FÁCIL' : (l === 2 ? 'MÉDIO' : (l === 3 ? 'DIFÍCIL' : ''));
+}
+
+/* chave do recorde por categoria:
+   nivel TODOS -> nome puro | nivel escolhido -> nome::dN (ex: PERSONAGENS::d2) */
+function catKey(cat) {
+  return S.catLevel ? (cat + '::d' + S.catLevel) : cat;
 }
 
 function storeSave() {
@@ -320,7 +333,8 @@ function isWide() {
 function buildDeck() {
   var pool = QUESTIONS.slice();
   if (G.mode === 'categoria' && G.cat) {
-    pool = QUESTIONS.filter(function (q) { return q.c === G.cat; });
+    var lvl = S.catLevel || 0;
+    pool = QUESTIONS.filter(function (q) { return q.c === G.cat && (!lvl || q.d === lvl); });
   }
   if (G.mode === 'classic') {
     // dificuldade progressiva: 3 faceis, 4 medias, 3 uteis
@@ -729,13 +743,13 @@ function endGame() {
   var keyStore = storeKeyFor(G.mode);
   var isCat = G.mode === 'categoria';
   /* No modo categoria o placar vale ACERTOS (zera a cada categoria) e o
-     recorde e registrado por categoria (ex: PERSONAGENS: 7). */
+     recorde e registrado por categoria+nivel (ex: PERSONAGENS::d3). */
   var displayScore = isCat ? G.hits : G.score;
   var isRecord = isCat
-    ? (displayScore > (S.catBest[G.cat] || 0))
+    ? (displayScore > (S.catBest[catKey(G.cat)] || 0))
     : (displayScore > (S.best[keyStore] || 0));
   if (isRecord) {
-    if (isCat) S.catBest[G.cat] = displayScore;
+    if (isCat) S.catBest[catKey(G.cat)] = displayScore;
     else S.best[keyStore] = displayScore;
   }
   S.games++;
@@ -765,8 +779,10 @@ function endGame() {
   $('endScoreLabel').textContent = isCat ? 'ACERTOS' : 'PONTOS';
   $('endHits').textContent = G.hits + (total ? '/' + total : '');
   $('endStreak').textContent = G.bestStreak;
-  $('endBest').textContent = fmtBen(isCat ? (S.catBest[G.cat] || 0) : (S.best[keyStore] || 0));
-  $('endBestLabel').textContent = isCat ? 'MELHOR DA CATEGORIA' : 'RECORDE';
+  $('endBest').textContent = fmtBen(isCat ? (S.catBest[catKey(G.cat)] || 0) : (S.best[keyStore] || 0));
+  $('endBestLabel').textContent = isCat
+    ? ('MELHOR DA CATEGORIA' + (levelLabel(S.catLevel) ? ' (' + levelLabel(S.catLevel) + ')' : ''))
+    : 'RECORDE';
   $('newRec').classList.toggle('hidden', !isRecord);
   if (isRecord) sfxOk();
   go('scEnd');
@@ -925,22 +941,55 @@ function finishGame() {
   return endGame();
 }
 
+/* ---------- NIVEIS NA TELA DE CATEGORIAS ---------- */
+function paintLevelBar() {
+  var btns = document.querySelectorAll('#levelBar .lvl');
+  for (var i = 0; i < btns.length; i++) {
+    var v = parseInt(btns[i].getAttribute('data-lvl'), 10);
+    if (isNaN(v)) v = 0;
+    btns[i].classList.toggle('on', v === (S.catLevel || 0));
+  }
+}
+
+function initLevelBar() {
+  var btns = document.querySelectorAll('#levelBar .lvl');
+  for (var i = 0; i < btns.length; i++) {
+    (function (btn) {
+      btn.addEventListener('click', function () {
+        var v = parseInt(btn.getAttribute('data-lvl'), 10);
+        if (isNaN(v)) v = 0;
+        S.catLevel = v;
+        storeSave();
+        sfxClick();
+        paintLevelBar();
+        renderCats();
+      });
+    })(btns[i]);
+  }
+  paintLevelBar();
+}
+
 /* ---------- CATEGORIAS ---------- */
 function renderCats() {
+  var lvl = S.catLevel || 0;
+  var label = levelLabel(lvl);
   var cats = {};
   QUESTIONS.forEach(function (q) {
-    if (!cats[q.c]) cats[q.c] = { n: 0, easy: 0 };
+    if (!cats[q.c]) cats[q.c] = { n: 0, shown: 0 };
     cats[q.c].n++;
-    if (q.d === 1) cats[q.c].easy++;
+    if (!lvl || q.d === lvl) cats[q.c].shown++;
   });
   var grid = $('catGrid');
   grid.innerHTML = '';
   Object.keys(cats).forEach(function (name) {
     var b = document.createElement('button');
     b.className = 'cat';
-    b.innerHTML = name + '<small>' + cats[name].n + ' perguntas</small>';
-    var rec = S.catBest[name] || 0;
-    if (rec) { // badge do melhor acerto gravado desta categoria
+    var small = cats[name].shown + ' perguntas';
+    if (label) small += ' (' + label.toLowerCase() + ')';
+    b.innerHTML = name + '<small>' + small + '</small>';
+    if (!cats[name].shown) b.disabled = true; // nivel sem perguntas nessa categoria
+    var rec = S.catBest[catKey(name)] || 0;
+    if (rec) { // badge do melhor acerto gravado desta categoria (neste nivel)
       var em = document.createElement('em');
       em.textContent = 'REC ' + rec;
       b.appendChild(em);
@@ -1046,6 +1095,8 @@ function init() {
   $('ladderModal').addEventListener('click', function (ev) {
     if (ev.target === $('ladderModal')) closeLadder();
   });
+
+  initLevelBar();
 
   // teclado: 1-4 responde, Enter continua
   document.addEventListener('keydown', function (ev) {
