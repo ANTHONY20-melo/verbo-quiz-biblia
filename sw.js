@@ -1,13 +1,17 @@
 /* VERBO - Service Worker: cache-first, app shell completo offline */
 'use strict';
 
-var CACHE = 'verbo-v9';
+var CACHE = 'verbo-v10';
 var ASSETS = [
   'index.html',
   'estilos.css',
   'banco.js',
   'voz.js',
   'app.js',
+  'amarrado.html',
+  'amarrado.css',
+  'amarrado-banco.js',
+  'amarrado-app.js',
   'manifest.json',
   'icon-192.png',
   'icon-512.png'

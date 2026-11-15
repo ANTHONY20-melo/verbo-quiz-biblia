@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0d12">
+  <meta name="description" content="TÁ NA BÍBLIA OU TÁ AMARRADO? - Você conhece a Palavra ou só ouviu falar? Descubra se essas frases estão na Bíblia ou se são apenas histórias que o povo conta!">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="amarrado.css">
+  <title>TÁ NA BÍBLIA OU TÁ AMARRADO?</title>
+</head>
+<body>
+
+  <!-- Animação de abertura -->
+  <div id="intro">
+    <div class="bible-wrap">
+      <div class="bible-half l"></div>
+      <div class="bible-half r"></div>
+      <div class="bible-glow"></div>
+    </div>
+    <div class="intro-title">
+      <h1>TÁ NA BÍBLIA<br>OU TÁ AMARRADO?</h1>
+      <p>"Você conhece a Palavra ou só ouviu falar?"</p>
+    </div>
+    <div class="intro-skip">toque para entrar</div>
+  </div>
+
+  <header class="top">
+    <div class="brand" id="brandBtn" title="Início">
+      <div class="name"><b>TÁ NA BÍBLIA OU TÁ AMARRADO?</b><small>Você conhece a Palavra?</small></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="iconbtn" id="fsBtn" title="Tela cheia (F)" aria-label="Tela cheia">&#9974;</button>
+    <button class="iconbtn" id="soundBtn" title="Som (S)" aria-label="Som">&#9835;</button>
+    <button class="iconbtn" id="verboBtn" title="Voltar ao VERBO" onclick="location.href='index.html'">&#8617;</button>
+  </header>
+
+  <!-- ===== INÍCIO ===== -->
+  <section class="screen on" id="scHome">
+    <div class="hero">
+      <h1>TÁ NA BÍBLIA <small>ou</small> TÁ AMARRADO?</h1>
+      <div class="sub">Você conhece mesmo a Palavra de Deus? Descubra se essas frases estão na Bíblia ou se são apenas histórias que o povo conta!</div>
+    </div>
+    <div class="modes">
+      <button class="mode" id="btnSolo">
+        <div class="mi">1</div>
+        <div class="mm"><b>Iniciar Jogo</b><span>Individual: 20 perguntas, 15 segundos cada. Dificuldade automática conforme seu desempenho.</span></div>
+      </button>
+      <button class="mode" id="btnTeams">
+        <div class="mi blue">2</div>
+        <div class="mm"><b>Modo Competição</b><span>Equipes se enfrentam com painel do apresentador. Ideal para eventos e gincanas.</span></div>
+      </button>
+      <button class="mode" id="btnFlash">
+        <div class="mi red">3</div>
+        <div class="mm"><b>Desafio Relâmpago</b><span>10 perguntas, 25 segundos cada. Pontos dobrados nas perguntas relâmpago!</span></div>
+      </button>
+      <button class="mode" id="btnSurv">
+        <div class="mi green">4</div>
+        <div class="mm"><b>Sobrevivência Bíblica</b><span>Um erro elimina. A dificuldade sobe a cada rodada. Até onde você chega?</span></div>
+      </button>
+      <button class="mode" id="btnHow">
+        <div class="mi gray">?</div>
+        <div class="mm"><b>Como Jogar</b><span>Regras dos 4 modos e atalhos de teclado.</span></div>
+      </button>
+      <button class="mode" id="btnBank">
+        <div class="mi gray">B</div>
+        <div class="mm"><b>Banco de Perguntas</b><span>Consulte as 213 frases, filtre por categoria e dificuldade, e use a área do administrador.</span></div>
+      </button>
+      <button class="mode" id="btnRank" style="grid-column: 1 / -1;">
+        <div class="mi gray">R</div>
+        <div class="mm"><b>Ranking</b><span>Recordes por modo e histórico de partidas. Exporte os resultados.</span></div>
+      </button>
+      <button class="mode" id="btnContinue" style="grid-column: 1 / -1; display: none;">
+        <div class="mi">C</div>
+        <div class="mm"><b>Continuar Partida</b><span id="continueInfo">Você tem uma partida em andamento.</span></div>
+      </button>
+    </div>
+    <div class="tagline">"VOCÊ CONHECE A PALAVRA OU SÓ OUVIU FALAR?"</div>
+    <div class="footer">TA NA BIBLIA OU TA AMARRADO &middot; 100% OFFLINE</div>
+  </section>
+
+  <!-- ===== COMO JOGAR ===== -->
+  <section class="screen" id="scHow">
+    <h2 style="color:var(--gold2)">Como Jogar</h2>
+    <p style="color:var(--muted); font-size:14px">Cada frase é apresentada no pergaminho. Decida entre:</p>
+    <ul class="howlist">
+      <li><b>&#128214; TÁ NA BÍBLIA!</b> — a frase tem fundamento textual nas Escrituras.</li>
+      <li><b>&#128274; TÁ AMARRADO!</b> — a frase não está na Bíblia: é ditado popular, invenção ou tradição.</li>
+    </ul>
+    <p style="color:var(--muted); font-size:14px"><b style="color:var(--ink)">Modos:</b> Individual (20 perguntas, 15s, 10 pts por acerto, dificuldade automática) &middot; Competição (equipes configuráveis com painel do apresentador) &middot; Relâmpago (10 perguntas, 25s, pontos dobrados nas #3, #6 e #9) &middot; Sobrevivência (um erro elimina, nível sobe a cada 5 acertos).</p>
+    <p style="color:var(--muted); font-size:14px"><b style="color:var(--ink)">Referências:</b> quando a frase é paráfrase de um versículo, a explicação mostra a diferença. Nenhuma referência é inventada.</p>
+    <div class="howkeys">
+      <span class="kbd">1 ou B — Tá na Bíblia</span>
+      <span class="kbd">2 ou A — Tá Amarrado</span>
+      <span class="kbd">Enter — Próxima</span>
+      <span class="kbd">S — Som</span>
+      <span class="kbd">F — Tela cheia</span>
+      <span class="kbd">Esc — Sair da tela cheia</span>
+    </div>
+    <div class="btnrow"><button class="btn primary" id="btnHowBack">Voltar</button></div>
+  </section>
+
+  <!-- ===== BANCO DE PERGUNTAS ===== -->
+  <section class="screen" id="scBank">
+    <h2 style="color:var(--gold2)">Banco de Perguntas</h2>
+    <div class="filters">
+      <input id="bankSearch" type="search" placeholder="Buscar frase..." aria-label="Buscar frase">
+      <select id="bankCat" aria-label="Categoria"><option value="">Todas as categorias</option></select>
+      <select id="bankLvl" aria-label="Dificuldade">
+        <option value="">Todas as dificuldades</option>
+        <option value="1">Fácil</option>
+        <option value="2">Médio</option>
+        <option value="3">Difícil</option>
+      </select>
+      <button class="btn" id="btnAdmin">Área do Administrador</button>
+    </div>
+    <div id="bankList"></div>
+    <div class="btnrow"><button class="btn primary" id="btnBankBack">Voltar</button></div>
+  </section>
+
+  <!-- ===== RANKING ===== -->
+  <section class="screen" id="scRank">
+    <h2 style="color:var(--gold2)">Ranking</h2>
+    <div class="statgrid" id="rankBest"></div>
+    <h3 style="color:var(--muted); font-size:12px; letter-spacing:2px; text-transform:uppercase">Histórico de partidas</h3>
+    <div id="rankList"></div>
+    <div class="btnrow">
+      <button class="btn" id="btnExportResults">Exportar resultados (CSV)</button>
+      <button class="btn primary" id="btnRankBack">Voltar</button>
+    </div>
+  </section>
+
+  <!-- ===== EQUIPES (CONFIGURAÇÃO) ===== -->
+  <section class="screen" id="scTeams">
+    <h2 style="color:var(--gold2)">Modo Competição</h2>
+    <div class="field" style="max-width:280px">
+      <label for="teamCount">Quantidade de equipes</label>
+      <select id="teamCount">
+        <option value="2">2 equipes</option>
+        <option value="3">3 equipes</option>
+        <option value="4" selected>4 equipes</option>
+        <option value="5">5 equipes</option>
+        <option value="6">6 equipes</option>
+        <option value="7">7 equipes</option>
+        <option value="8">8 equipes</option>
+      </select>
+    </div>
+    <div id="teamList" style="max-width:420px; margin-top:14px"></div>
+    <div class="teamgrid" style="max-width:560px">
+      <div class="field"><label for="cfgQtd">Perguntas por rodada</label>
+        <select id="cfgQtd"><option>5</option><option>10</option><option selected>20</option><option>30</option></select></div>
+      <div class="field"><label for="cfgRounds">Rodadas</label>
+        <select id="cfgRounds"><option>1</option><option>2</option><option selected>3</option><option>5</option></select></div>
+      <div class="field"><label for="cfgTime">Tempo por resposta (s)</label>
+        <select id="cfgTime"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></div>
+      <div class="field"><label for="cfgPts">Pontos por acerto</label>
+        <select id="cfgPts"><option>5</option><option selected>10</option><option>20</option><option>50</option></select></div>
+      <div class="field"><label for="cfgBonus">Pontos de bônus</label>
+        <select id="cfgBonus"><option selected>5</option><option>10</option><option>20</option></select></div>
+      <div class="field"><label for="cfgLvl">Dificuldade</label>
+        <select id="cfgLvl"><option value="0" selected>Todas</option><option value="1">Fácil</option><option value="2">Médio</option><option value="3">Difícil</option></select></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btnTeamsBack">Voltar</button>
+      <button class="btn primary" id="btnTeamsStart">Iniciar Competição</button>
+    </div>
+  </section>
+
+  <!-- ===== JOGO ===== -->
+  <section class="screen" id="scGame">
+    <div class="gamehead">
+      <span class="gtag" id="gTagMode">MODO</span>
+      <span class="gtag" id="gTagQ">PERGUNTA 1</span>
+      <span class="gtag" id="gTagScore">0</span>
+      <span class="gtag timer" id="gTagTimer">15s</span>
+      <span class="turnteam" id="turnTeam" style="display:none"></span>
+      <span class="spacer"></span>
+      <button class="mini" id="btnQuitGame">SAIR</button>
+    </div>
+    <div class="timerbar" id="timerBar"><i id="timerFill"></i></div>
+    <div class="qnum" id="qNum">PERGUNTA 01</div>
+    <div class="perga" id="perga">
+      <div class="frase" id="qFrase">...</div>
+    </div>
+    <div class="choices">
+      <button class="choice book" id="choiceBook">&#128214; TÁ NA BÍBLIA!</button>
+      <button class="choice lock" id="choiceLock">&#128274; TÁ AMARRADO!</button>
+    </div>
+    <div class="feedback" id="feedback">
+      <div class="fbhead" id="fbHead">ACERTOU!</div>
+      <div class="fbref" id="fbRef"></div>
+      <div class="fbexp" id="fbExp"></div>
+      <div class="fbnext"><button class="btn primary" id="btnNext">PRÓXIMA PERGUNTA</button></div>
+    </div>
+
+    <div class="presenter" id="presPanel" style="display:none">
+      <h3>Painel do Apresentador</h3>
+      <div class="pgrid">
+        <button class="pbtn" id="presPause">Pausar / Retomar</button>
+        <button class="pbtn" id="presReveal">Revelar resposta</button>
+        <button class="pbtn gold" id="presBonus">+ Bônus</button>
+        <button class="pbtn red" id="presMinus">- Pontos</button>
+        <button class="pbtn" id="presSkip">Pular pergunta</button>
+        <button class="pbtn" id="presLadder">Ver placar</button>
+        <button class="pbtn red" id="presRestart">Reiniciar rodada</button>
+        <button class="pbtn red" id="presEnd">Encerrar competição</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FIM ===== -->
+  <section class="screen" id="scEnd">
+    <div class="endtitle" id="endTitle">FIM DE JOGO</div>
+    <div class="endsub" id="endSub"></div>
+    <div class="podium" id="podium" style="display:none"></div>
+    <div class="statgrid" id="endStats"></div>
+    <div class="btnrow">
+      <button class="btn primary" id="btnPlayAgain">Jogar novamente</button>
+      <button class="btn" id="btnEndExport">Exportar (CSV)</button>
+      <button class="btn ghost" id="btnEndHome">Início</button>
+    </div>
+  </section>
+
+  <!-- Modal: área do administrador -->
+  <div class="modal" id="adminModal">
+    <div class="mbox">
+      <h2 id="adminTitle">Cadastrar nova pergunta</h2>
+      <div class="field"><label for="fFrase">Frase ou afirmação</label><input id="fFrase" type="text" maxlength="240"></div>
+      <div class="field" style="margin-top:10px"><label for="fResp">Resposta correta</label>
+        <select id="fResp"><option value="1">TÁ NA BÍBLIA (tem fundamento textual)</option><option value="0">TÁ AMARRADO (não está na Bíblia)</option></select></div>
+      <div class="field" style="margin-top:10px"><label for="fRef">Referência bíblica (livro capítulo:versículo — deixe vazio se não houver)</label><input id="fRef" type="text" placeholder="Ex.: João 3:16"></div>
+      <div class="field" style="margin-top:10px"><label for="fExp">Explicação curta</label><input id="fExp" type="text" maxlength="300"></div>
+      <div class="teamgrid">
+        <div class="field"><label for="fLvl">Dificuldade</label>
+          <select id="fLvl"><option value="1">Fácil</option><option value="2">Médio</option><option value="3">Difícil</option></select></div>
+        <div class="field"><label for="fCat">Categoria</label><select id="fCat"></select></div>
+      </div>
+      <div class="mrow">
+        <button class="btn ghost" id="btnAdminCancel">Fechar</button>
+        <button class="btn primary" id="btnSaveQ">Salvar pergunta</button>
+      </div>
+      <h2 style="margin-top:18px">Importar perguntas (JSON)</h2>
+      <textarea id="iJson" placeholder='[{"frase":"...","resp":1,"ref":"João 3:16","exp":"...","lvl":1,"cat":"Versículos"}]'></textarea>
+      <div class="mrow">
+        <button class="btn" id="btnExportBank">Exportar banco (JSON)</button>
+        <button class="btn primary" id="btnDoImport">Importar</button>
+      </div>
+      <p style="color:var(--muted); font-size:11.5px; line-height:1.6">Regras do banco: não invente referências. Se a frase for paráfrase, explique a diferença no campo de explicação. Perguntas do jogo original são fixas; as cadastradas por você podem ser editadas e excluídas.</p>
+    </div>
+  </div>
+
+  <!-- Modal: placar de equipes -->
+  <div class="modal" id="ladderModal">
+    <div class="mbox">
+      <h2>Placar da Competição</h2>
+      <div class="ladder" id="ladderList"></div>
+      <div class="mrow"><button class="btn primary" id="btnLadderClose">Fechar</button></div>
+    </div>
+  </div>
+
+  <script src="amarrado-banco.js"></script>
+  <script src="amarrado-app.js"></script>
+</body>
+</html>
