@@ -1,7 +1,8 @@
 /* ============================================================
    TÁ NA BÍBLIA OU TÁ AMARRADO? - Banco de frases
-   213 perguntas (50 fáceis, 88 médias, 75 difíceis) em 11 categorias.
+   251 perguntas (50 fáceis, 111 médias, 90 difíceis) em 11 categorias.
    Bloco 172-213: pegadinhas de ditados populares vs. paráfrases.
+   Bloco 214-228: frases religiosas que PARECEM versículos mas não são.
    resp: 1 = TÁ NA BÍBLIA | 0 = TÁ AMARRADO
    ref: referência bíblica (vazia quando não se aplica)
    Regra: NUNCA inventar referências. Paráfrases são explicadas.
@@ -239,7 +240,47 @@ var QUESTIONS_X = [
   P(210, 'Frases Populares', 2, 'O trabalho dignifica o homem.', 0, '', 'Máxima popular (de origem humanista); não está na Bíblia.'),
   P(211, 'Versículos', 3, 'O temor do Senhor é o princípio do conhecimento.', 1, 'Provérbios 1:7', 'Abertura do livro de Provérbios (Provérbios 9:10 usa "sabedoria" — pegadinha com aquela frase).'),
   P(212, 'Versículos', 2, 'Há tempo para todas as coisas debaixo do céu.', 1, 'Eclesiastes 3:1', '"Todo o tempo tem o seu tempo determinado, e há tempo para todo o propósito debaixo do céu."'),
-  P(213, 'Frases Populares', 2, 'A felicidade não depende das circunstâncias.', 0, '', 'Frase popular de autoajuda; não está na Bíblia.')
+  P(213, 'Frases Populares', 2, 'A felicidade não depende das circunstâncias.', 0, '', 'Frase popular de autoajuda; não está na Bíblia.'),
+  /* ===== BLOCO DE "PARECE VERSÍCULO" (214-228): frases religiosas NÃO bíblicas ===== */
+  P(214, 'Frases Populares', 3, 'O homem propõe, Deus dispõe.', 0, '', 'Frase de Tomás de Kempis, na "A Imitação de Cristo" (séc. XV); não está na Bíblia. Provérbios 16:9 é parecido ("o homem planeja o caminho, mas o Senhor dirige os passos"), mas as palavras não.'),
+  P(215, 'Frases Populares', 3, 'Ajuda-te e o céu te ajudará.', 0, '', 'Provérbio antigo; NÃO está na Bíblia — Jesus manda buscar primeiro o Reino (Mateus 6:33) e confiar, não se autoajudar primeiro.'),
+  P(216, 'Curiosidades', 3, 'Deus ajuda os audazes.', 0, '', 'Tradução de um provérbio latino (Fortes fortuna adiuvat); não está na Bíblia. Josué 1:9 manda ser forte e corajoso porque Deus está junto — outra ideia.'),
+  P(217, 'Frases Populares', 3, 'Deus castiga os maus e premia os bons.', 0, '', 'Crença popular de retribuição imediata; a Bíblia fala do juízo de Deus (Eclesiastes 12:14), mas a frase não está escrita.'),
+  P(218, 'Frases Populares', 3, 'O silêncio é de Deus.', 0, '', 'Máxima popular de origem antiga (atribuída a Alphonsus); não está na Bíblia.'),
+  P(219, 'Frases Populares', 3, 'Nada acontece por acaso.', 0, '', 'Frase de pregação popular; a doutrina parecida está em Romanos 8:28 ("todas as coisas cooperam para o bem dos que amam a Deus"), mas a frase não.'),
+  P(220, 'Frases Populares', 3, 'A caridade começa em casa.', 0, '', 'Provérbio popular antigo; NÃO está na Bíblia. 1 Timóteo 5:8 fala de prover os seus, mas a frase não existe.'),
+  P(221, 'Frases Populares', 3, 'Deus ama o pecador, mas detesta o pecado.', 0, '', 'Frase famosa de pregação; NÃO está escrita. A Bíblia mostra Cristo comendo com pecadores (Lucas 7:34) e amando os que ainda eram pecadores (Romanos 5:8), mas não com essas palavras.'),
+  P(222, 'Frases Populares', 3, 'Onde há vida, há esperança.', 0, '', 'Provérbio popular (a ideia vem do orador romano Cícero); não está na Bíblia. A esperança cristã está em Romanos 5:5, com outras palavras.'),
+  P(223, 'Frases Populares', 3, 'Deus é bom o tempo todo.', 0, '', 'Frase litúrgica repetida nos cultos; a Bíblia diz "provai e vede que o Senhor é bom" (Salmos 34:8), mas a expressão completa não está escrita.'),
+  P(224, 'Frases Populares', 3, 'Todo mal se paga.', 0, '', 'Crença popular de retribuição; a Bíblia fala de semear e ceifar (Gálatas 6:7), mas a frase não está escrita.'),
+  P(225, 'Frases Populares', 3, 'Fé em Deus e pé na estrada.', 0, '', 'Frase popular de fé ativa; NÃO está na Bíblia. Tiago 2:17 fala de fé com obras — ideia parecida, palavras diferentes.'),
+  P(226, 'Frases Populares', 3, 'O amor de Deus é incondicional.', 0, '', 'Frase de pregação moderna; a palavra "incondicional" não aparece na Bíblia. Romanos 5:8 demonstra o amor de Deus por nós ainda sendo pecadores.'),
+  P(227, 'Frases Populares', 3, 'A paciência é uma virtude.', 0, '', 'Provérbio antigo; NÃO está na Bíblia. Gálatas 5:22 lista a paciência como fruto do Espírito — outra afirmação.'),
+  P(228, 'Curiosidades', 3, 'O que não te mata te fortalece.', 0, '', 'Frase do filósofo Nietzsche ("o que não me mata me fortalece"); NÃO está na Bíblia. 2 Coríntios 12:9 fala de força na fraqueza em Cristo — outra ideia.'),
+  /* ===== BLOCO DE DITADOS (229-251): sabedoria popular, não bíblica ===== */
+  P(229, 'Frases Populares', 2, 'A vingança é um prato que se come frio.', 0, '', 'Provérbio popular; NÃO está na Bíblia — que diz o contrário: "Minha é a vingança; eu retribuirei" (Romanos 12:19).'),
+  P(230, 'Frases Populares', 2, 'O tempo cura todas as feridas.', 0, '', 'Máxima popular; não está na Bíblia. O consolador é Deus (2 Coríntios 1:3), não o tempo.'),
+  P(231, 'Frases Populares', 2, 'Quem ama o feio, bonito lhe parece.', 0, '', 'Ditado popular; não está na Bíblia.'),
+  P(232, 'Frases Populares', 2, 'Caiu na rede é peixe.', 0, '', 'Ditado popular moderno; não está na Bíblia.'),
+  P(233, 'Curiosidades', 2, 'Deus não joga dados.', 0, '', 'Frase de Einstein sobre a física quântica; NÃO está na Bíblia.'),
+  P(234, 'Frases Populares', 2, 'Sem dor, sem ganho.', 0, '', 'Máxima moderna de treino; não está na Bíblia.'),
+  P(235, 'Frases Populares', 2, 'Os opostos se atraem.', 0, '', 'Máxima popular; não está na Bíblia.'),
+  P(236, 'Frases Populares', 2, 'Quem tudo quer, tudo perde.', 0, '', 'Provérbio popular; não está na Bíblia. 1 Tessalonicenses 4:11 manda contentar-se com o modo de viver modesto — ideia parecida.'),
+  P(237, 'Curiosidades', 2, 'Tudo o que brilha não é ouro.', 0, '', 'Frase popular de Shakespeare ("O Mercador de Veneza"); NÃO está na Bíblia.'),
+  P(238, 'Frases Populares', 2, 'O céu é o limite.', 0, '', 'Expressão moderna de ambição; não está na Bíblia.'),
+  P(239, 'Frases Populares', 2, 'Devagar se vai ao longe.', 0, '', 'Ditado popular; não está na Bíblia.'),
+  P(240, 'Frases Populares', 2, 'Antes só do que mal acompanhado.', 0, '', 'Ditado popular; não está na Bíblia.'),
+  P(241, 'Frases Populares', 2, 'A ocasião faz o ladrão.', 0, '', 'Provérbio popular; não está na Bíblia.'),
+  P(242, 'Frases Populares', 2, 'Em casa de ferreiro, o espeto é de pau.', 0, '', 'Ditado popular; não está na Bíblia.'),
+  P(243, 'Frases Populares', 2, 'A água mole em pedra dura, tanto bate até que fura.', 0, '', 'Provérbio popular; não está na Bíblia.'),
+  P(244, 'Frases Populares', 2, 'Melhor prevenir do que remediar.', 0, '', 'Provérbio popular; não está na Bíblia.'),
+  P(245, 'Frases Populares', 2, 'Não ponha o carro na frente dos bois.', 0, '', 'Ditado popular; não está na Bíblia.'),
+  P(246, 'Frases Populares', 2, 'Cada cabeça, uma sentença.', 0, '', 'Ditado popular; não está na Bíblia.'),
+  P(247, 'Frases Populares', 2, 'Filho de peixe, peixinho é.', 0, '', 'Ditado popular; não está na Bíblia.'),
+  P(248, 'Frases Populares', 2, 'Uma mão lava a outra.', 0, '', 'Provérbio popular; não está na Bíblia.'),
+  P(249, 'Frases Populares', 2, 'O amor é cego.', 0, '', 'Máxima popular; não está na Bíblia.'),
+  P(250, 'Frases Populares', 2, 'A honestidade é a melhor política.', 0, '', 'Máxima popular; não está na Bíblia.'),
+  P(251, 'Frases Populares', 2, 'A grama do vizinho é sempre mais verde.', 0, '', 'Máxima popular; não está na Bíblia.')
 ];
 
 /* ============ BANCO FINAL ============ */
